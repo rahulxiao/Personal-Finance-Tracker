@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             valid = false;
         }
 
-        // Basic email validation (no regex)
+        // Basic email validation 
         if (email.value.trim() === '') {
             showError('email-error', 'Email is required');
             valid = false;

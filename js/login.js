@@ -27,6 +27,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!valid) {
             e.preventDefault(); 
         }
+        else{
+            window.location.href = 'features.html'; 
+            e.preventDefault(); 
+        }
     });
 
     function showError(input, message) {

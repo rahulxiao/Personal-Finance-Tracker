@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinanceFlow - Export Data</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+        <link rel="stylesheet" href="../css/feature.css" />
+        <link rel="stylesheet" href="../css/export-data.css" />
+    </head>
+    <body>
+        <div class="app-container">
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h1>FinanceFlow</h1>
+                    <button
+                        id="sidebar-toggle"
+                        class="sidebar-toggle mobile-only"
+                    >
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+                <ul class="sidebar-menu">
+                    <li data-page="dashboard">
+                        <a href="index.html"
+                            ><i data-feather="home"></i> Dashboard</a
+                        >
+                    </li>
+                    <li class="active" data-page="features">
+                        <a href="index.html"
+                            ><i data-feather="grid"></i> Features</a
+                        >
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <header class="page-header">
+                    <h1 id="page-title">Export Data</h1>
+                    <div class="date-display" id="current-date"></div>
+                </header>
+
+                <div class="feature-content">
+                    <div class="page-actions">
+                        <button class="back-button" onclick="window.location.href='../pages/features.html'">
+                            <i data-feather="arrow-left"></i> Back to Features
+                        </button>
+                        
+                        <div class="export-nav-tabs">
+                            <button class="export-nav-tab active" data-tab="wizard">Export Wizard</button>
+                            <button class="export-nav-tab" data-tab="format">Format Selector</button>
+                            <button class="export-nav-tab" data-tab="archive">Archive Manager</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content Sections -->
+                    <div class="export-tab-content">
+                        <!-- Export Wizard Tab (default visible) -->
+                        <div class="export-tab-pane active" id="wizard-tab">
+                            <div class="feature-description">
+                                <div class="feature-icon large">
+                                    <i data-feather="download"></i>
+                                </div>
+                                <h2>Export Your Financial Data</h2>
+                                <p>
+                                    Export your financial data in various formats for backup, analysis, or sharing with your financial advisor.
+                                    Our step-by-step wizard guides you through the process of selecting exactly what you need.
+                                </p>
+                            </div>
+
+                            <div class="wizard-steps">
+                                <div class="wizard-step active" data-step="1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Select Data</div>
+                                </div>
+                                <div class="connector"></div>
+                                <div class="wizard-step" data-step="2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Choose Format</div>
+                                </div>
+                                <div class="connector"></div>
+                                <div class="wizard-step" data-step="3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Configure Options</div>
+                                </div>
+                                <div class="connector"></div>
+                                <div class="wizard-step" data-step="4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">Export</div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-content">
+                                <!-- Step 1: Select Data -->
+                                <div class="wizard-panel active" data-panel="1">
+                                    <h3>Select Data to Export</h3>
+                                    <p>Choose the data categories you want to include in your export.</p>
+                                    
+                                    <div class="export-options">
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="transactions" checked>
+                                            <span class="option-label">
+                                                <i data-feather="credit-card"></i>
+                                                <span>Transactions</span>
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="budget-goals" checked>
+                                            <span class="option-label">
+                                                <i data-feather="target"></i>
+                                                <span>Budget Goals</span>
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="income-sources">
+                                            <span class="option-label">
+                                                <i data-feather="trending-up"></i>
+                                                <span>Income Sources</span>
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="expense-categories">
+                                            <span class="option-label">
+                                                <i data-feather="tag"></i>
+                                                <span>Expense Categories</span>
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="tax-information">
+                                            <span class="option-label">
+                                                <i data-feather="file-text"></i>
+                                                <span>Tax Information</span>
+                                            </span>
+                                        </label>
+                                        
+                                        <label class="export-option">
+                                            <input type="checkbox" name="export-data" value="accounts">
+                                            <span class="option-label">
+                                                <i data-feather="link"></i>
+                                                <span>Linked Accounts</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="date-range-selector">
+                                        <h4>Select Date Range</h4>
+                                        <div class="date-inputs">
+                                            <div class="date-input-group">
+                                                <label for="start-date">Start Date</label>
+                                                <input type="date" id="start-date">
+                                            </div>
+                                            <div class="date-input-group">
+                                                <label for="end-date">End Date</label>
+                                                <input type="date" id="end-date">
+                                            </div>
+                                        </div>
+                                        <div class="date-presets">
+                                            <button class="date-preset" data-range="7">Last 7 Days</button>
+                                            <button class="date-preset" data-range="30">Last 30 Days</button>
+                                            <button class="date-preset" data-range="90">Last 90 Days</button>
+                                            <button class="date-preset" data-range="365">Last Year</button>
+                                            <button class="date-preset" data-range="all">All Time</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="wizard-actions">
+                                        <button class="wizard-next-btn">Next Step</button>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Choose Format -->
+                                <div class="wizard-panel" data-panel="2">
+                                    <h3>Choose Export Format</h3>
+                                    <p>Select the file format that best suits your needs.</p>
+                                    
+                                    <div class="format-cards">
+                                        <div class="format-card selected" data-format="csv">
+                                            <div class="format-icon">
+                                                <i data-feather="file-text"></i>
+                                            </div>
+                                            <h4>CSV</h4>
+                                            <p>Spreadsheet-compatible format ideal for data analysis in Excel or Google Sheets.</p>
+                                            <div class="format-features">
+                                                <span class="feature-tag">Universal</span>
+                                                <span class="feature-tag">Editable</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="format-card" data-format="pdf">
+                                            <div class="format-icon">
+                                                <i data-feather="file"></i>
+                                            </div>
+                                            <h4>PDF</h4>
+                                            <p>Professional document format ideal for sharing with your accountant or tax professional.</p>
+                                            <div class="format-features">
+                                                <span class="feature-tag">Professional</span>
+                                                <span class="feature-tag">Non-editable</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="format-card" data-format="qbo">
+                                            <div class="format-icon">
+                                                <i data-feather="hash"></i>
+                                            </div>
+                                            <h4>QBO</h4>
+                                            <p>QuickBooks Online format for direct import into QuickBooks accounting software.</p>
+                                            <div class="format-features">
+                                                <span class="feature-tag">QuickBooks</span>
+                                                <span class="feature-tag">Accounting</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="format-card" data-format="json">
+                                            <div class="format-icon">
+                                                <i data-feather="code"></i>
+                                            </div>
+                                            <h4>JSON</h4>
+                                            <p>Technical format ideal for developers or data import into other software.</p>
+                                            <div class="format-features">
+                                                <span class="feature-tag">Technical</span>
+                                                <span class="feature-tag">Structured</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="wizard-actions">
+                                        <button class="wizard-back-btn">Previous Step</button>
+                                        <button class="wizard-next-btn">Next Step</button>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Configure Options -->
+                                <div class="wizard-panel" data-panel="3">
+                                    <h3>Configure Export Options</h3>
+                                    <p>Customize your export with these additional options.</p>
+                                    
+                                    <div class="export-config-options">
+                                        <div class="config-option">
+                                            <h4>Security Options</h4>
+                                            <div class="option-group">
+                                                <label class="switch-label">
+                                                    <input type="checkbox" id="encrypt-export">
+                                                    <span class="switch"></span>
+                                                    <span>Encrypt sensitive data</span>
+                                                </label>
+                                                <div class="encryption-details" style="display: none;">
+                                                    <div class="password-input">
+                                                        <label for="export-password">Password</label>
+                                                        <input type="password" id="export-password" placeholder="Enter password">
+                                                    </div>
+                                                    <div class="password-strength">
+                                                        <div class="strength-label">Password strength:</div>
+                                                        <div class="strength-meter">
+                                                            <div class="strength-fill" style="width: 0%;"></div>
+                                                        </div>
+                                                        <div class="strength-text">None</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="config-option">
+                                            <h4>Formatting Options</h4>
+                                            <div class="option-group">
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="include-headers" checked>
+                                                    <span>Include column headers</span>
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="format-numbers" checked>
+                                                    <span>Format numbers with currency symbols</span>
+                                                </label>
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" id="pretty-print">
+                                                    <span>Pretty print (for JSON format)</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="config-option">
+                                            <h4>Schedule Automatic Export</h4>
+                                            <div class="option-group">
+                                                <label class="switch-label">
+                                                    <input type="checkbox" id="schedule-export">
+                                                    <span class="switch"></span>
+                                                    <span>Schedule recurring exports</span>
+                                                </label>
+                                                <div class="schedule-details" style="display: none;">
+                                                    <div class="schedule-frequency">
+                                                        <label for="export-frequency">Frequency</label>
+                                                        <select id="export-frequency">
+                                                            <option value="daily">Daily</option>
+                                                            <option value="weekly" selected>Weekly</option>
+                                                            <option value="monthly">Monthly</option>
+                                                            <option value="quarterly">Quarterly</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="delivery-method">
+                                                        <label for="delivery-method">Delivery Method</label>
+                                                        <select id="delivery-method">
+                                                            <option value="email">Email</option>
+                                                            <option value="download">Download Link</option>
+                                                            <option value="cloud">Cloud Storage</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="wizard-actions">
+                                        <button class="wizard-back-btn">Previous Step</button>
+                                        <button class="wizard-next-btn">Next Step</button>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Export -->
+                                <div class="wizard-panel" data-panel="4">
+                                    <h3>Ready to Export</h3>
+                                    <p>Review your export settings and click Export to download your data.</p>
+                                    
+                                    <div class="export-summary">
+                                        <div class="summary-section">
+                                            <h4>Data Selection</h4>
+                                            <ul id="data-selection-summary">
+                                                <li>Transactions</li>
+                                                <li>Budget Goals</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="summary-section">
+                                            <h4>Date Range</h4>
+                                            <p id="date-range-summary">Last 30 days (Apr 1, 2025 - May 1, 2025)</p>
+                                        </div>
+                                        
+                                        <div class="summary-section">
+                                            <h4>Export Format</h4>
+                                            <p id="format-summary">CSV (.csv)</p>
+                                        </div>
+                                        
+                                        <div class="summary-section">
+                                            <h4>Security</h4>
+                                            <p id="security-summary">No encryption</p>
+                                        </div>
+                                        
+                                        <div class="summary-section">
+                                            <h4>Scheduling</h4>
+                                            <p id="schedule-summary">No scheduled exports</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="export-agreement">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="data-agreement">
+                                            <span>I understand that exported data may contain sensitive financial information and will handle it securely.</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="wizard-actions">
+                                        <button class="wizard-back-btn">Previous Step</button>
+                                        <button class="export-data-btn" disabled>Export Data</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Format Selector Tab -->
+                        <div class="export-tab-pane" id="format-tab">
+                            <div class="feature-description">
+                                <div class="feature-icon large">
+                                    <i data-feather="file"></i>
+                                </div>
+                                <h2>Choose Your Export Format</h2>
+                                <p>
+                                    Select the right file format for your needs. Each format has different benefits depending on how you plan to use your data.
+                                </p>
+                            </div>
+
+                            <div class="format-comparison">
+                                <div class="format-table">
+                                    <div class="table-header">
+                                        <div class="header-cell feature-column">Features</div>
+                                        <div class="header-cell">CSV</div>
+                                        <div class="header-cell">PDF</div>
+                                        <div class="header-cell">QBO</div>
+                                        <div class="header-cell">JSON</div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">Editable</div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">Formatted Report</div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">Software Import</div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">Excel Compatible</div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">QuickBooks Compatible</div>
+                                        <div><i data-feather="check" class="icon-partial"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                    </div>
+                                    
+                                    <div class="table-row">
+                                        <div class="feature-column">Developer Friendly</div>
+                                        <div><i data-feather="check" class="icon-partial"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="x" class="icon-error"></i></div>
+                                        <div><i data-feather="check" class="icon-success"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="format-quick-export">
+                                <h3>Quick Export</h3>
+                                <p>Choose a format and click to export all your recent transactions.</p>
+                                
+                                <div class="quick-export-buttons">
+                                    <button class="quick-export-btn" data-format="csv">
+                                        <i data-feather="file-text"></i>
+                                        <span>CSV</span>
+                                    </button>
+                                    <button class="quick-export-btn" data-format="pdf">
+                                        <i data-feather="file"></i>
+                                        <span>PDF</span>
+                                    </button>
+                                    <button class="quick-export-btn" data-format="qbo">
+                                        <i data-feather="hash"></i>
+                                        <span>QBO</span>
+                                    </button>
+                                    <button class="quick-export-btn" data-format="json">
+                                        <i data-feather="code"></i>
+                                        <span>JSON</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Archive Manager Tab -->
+                        <div class="export-tab-pane" id="archive-tab">
+                            <div class="feature-description">
+                                <div class="feature-icon large">
+                                    <i data-feather="archive"></i>
+                                </div>
+                                <h2>Manage Your Exported Data</h2>
+                                <p>
+                                    View your previous exports, download archived data, and manage your automatic export schedules.
+                                </p>
+                            </div>
+
+                            <div class="archive-tabs">
+                                <button class="archive-tab active" data-archive-tab="exports">Previous Exports</button>
+                                <button class="archive-tab" data-archive-tab="schedules">Scheduled Exports</button>
+                                <button class="archive-tab" data-archive-tab="settings">Backup Settings</button>
+                            </div>
+
+                            <div class="archive-tab-content">
+                                <!-- Previous Exports Tab -->
+                                <div class="archive-tab-pane active" id="exports-tab">
+                                    <div class="section-header">
+                                        <h3>Previous Exports</h3>
+                                        <div class="export-search">
+                                            <input type="text" placeholder="Search exports...">
+                                            <button class="search-btn">
+                                                <i data-feather="search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="export-history">
+                                        <div class="export-history-item">
+                                            <div class="export-info">
+                                                <div class="export-type">
+                                                    <i data-feather="file-text"></i>
+                                                    <span class="format-badge">CSV</span>
+                                                </div>
+                                                <div class="export-details">
+                                                    <h4>Transactions and Budget Goals</h4>
+                                                    <div class="export-meta">
+                                                        <span class="export-date">Apr 28, 2025</span>
+                                                        <span class="export-size">142 KB</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="export-actions">
+                                                <button class="action-btn" title="Download">
+                                                    <i data-feather="download"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="export-history-item">
+                                            <div class="export-info">
+                                                <div class="export-type">
+                                                    <i data-feather="file"></i>
+                                                    <span class="format-badge">PDF</span>
+                                                </div>
+                                                <div class="export-details">
+                                                    <h4>Tax Information Summary</h4>
+                                                    <div class="export-meta">
+                                                        <span class="export-date">Apr 15, 2025</span>
+                                                        <span class="export-size">3.2 MB</span>
+                                                        <span class="security-badge">
+                                                            <i data-feather="lock"></i> Encrypted
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="export-actions">
+                                                <button class="action-btn" title="Download">
+                                                    <i data-feather="download"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="export-history-item">
+                                            <div class="export-info">
+                                                <div class="export-type">
+                                                    <i data-feather="hash"></i>
+                                                    <span class="format-badge">QBO</span>
+                                                </div>
+                                                <div class="export-details">
+                                                    <h4>QuickBooks Export - March 2025</h4>
+                                                    <div class="export-meta">
+                                                        <span class="export-date">Apr 2, 2025</span>
+                                                        <span class="export-size">256 KB</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="export-actions">
+                                                <button class="action-btn" title="Download">
+                                                    <i data-feather="download"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="export-history-item">
+                                            <div class="export-info">
+                                                <div class="export-type">
+                                                    <i data-feather="code"></i>
+                                                    <span class="format-badge">JSON</span>
+                                                </div>
+                                                <div class="export-details">
+                                                    <h4>Complete Financial Data</h4>
+                                                    <div class="export-meta">
+                                                        <span class="export-date">Mar 15, 2025</span>
+                                                        <span class="export-size">1.7 MB</span>
+                                                        <span class="security-badge">
+                                                            <i data-feather="lock"></i> Encrypted
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="export-actions">
+                                                <button class="action-btn" title="Download">
+                                                    <i data-feather="download"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Scheduled Exports Tab -->
+                                <div class="archive-tab-pane" id="schedules-tab">
+                                    <div class="section-header">
+                                        <h3>Scheduled Exports</h3>
+                                        <button class="new-schedule-btn">
+                                            <i data-feather="plus"></i> New Schedule
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="scheduled-exports">
+                                        <div class="scheduled-export-item">
+                                            <div class="schedule-info">
+                                                <div class="schedule-icon">
+                                                    <i data-feather="calendar"></i>
+                                                </div>
+                                                <div class="schedule-details">
+                                                    <h4>Weekly Transactions Backup</h4>
+                                                    <div class="schedule-meta">
+                                                        <span class="schedule-frequency">
+                                                            <i data-feather="repeat"></i> Weekly (Mondays)
+                                                        </span>
+                                                        <span class="schedule-format">
+                                                            <i data-feather="file-text"></i> CSV
+                                                        </span>
+                                                        <span class="delivery-method">
+                                                            <i data-feather="mail"></i> Email
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="schedule-status active">Active</div>
+                                            <div class="schedule-actions">
+                                                <button class="action-btn" title="Edit">
+                                                    <i data-feather="edit-2"></i>
+                                                </button>
+                                                <button class="action-btn" title="Pause">
+                                                    <i data-feather="pause"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="scheduled-export-item">
+                                            <div class="schedule-info">
+                                                <div class="schedule-icon">
+                                                    <i data-feather="calendar"></i>
+                                                </div>
+                                                <div class="schedule-details">
+                                                    <h4>Monthly Tax Report</h4>
+                                                    <div class="schedule-meta">
+                                                        <span class="schedule-frequency">
+                                                            <i data-feather="repeat"></i> Monthly (1st)
+                                                        </span>
+                                                        <span class="schedule-format">
+                                                            <i data-feather="file"></i> PDF
+                                                        </span>
+                                                        <span class="delivery-method">
+                                                            <i data-feather="mail"></i> Email
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="schedule-status active">Active</div>
+                                            <div class="schedule-actions">
+                                                <button class="action-btn" title="Edit">
+                                                    <i data-feather="edit-2"></i>
+                                                </button>
+                                                <button class="action-btn" title="Pause">
+                                                    <i data-feather="pause"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="scheduled-export-item">
+                                            <div class="schedule-info">
+                                                <div class="schedule-icon">
+                                                    <i data-feather="calendar"></i>
+                                                </div>
+                                                <div class="schedule-details">
+                                                    <h4>Quarterly QuickBooks Export</h4>
+                                                    <div class="schedule-meta">
+                                                        <span class="schedule-frequency">
+                                                            <i data-feather="repeat"></i> Quarterly
+                                                        </span>
+                                                        <span class="schedule-format">
+                                                            <i data-feather="hash"></i> QBO
+                                                        </span>
+                                                        <span class="delivery-method">
+                                                            <i data-feather="cloud"></i> Cloud Storage
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="schedule-status paused">Paused</div>
+                                            <div class="schedule-actions">
+                                                <button class="action-btn" title="Edit">
+                                                    <i data-feather="edit-2"></i>
+                                                </button>
+                                                <button class="action-btn" title="Resume">
+                                                    <i data-feather="play"></i>
+                                                </button>
+                                                <button class="action-btn" title="Delete">
+                                                    <i data-feather="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Backup Settings Tab -->
+                                <div class="archive-tab-pane" id="settings-tab">
+                                    <div class="backup-settings">
+                                        <div class="settings-card">
+                                            <h3>Automatic Backup Settings</h3>
+                                            <div class="settings-group">
+                                                <label class="switch-label">
+                                                    <input type="checkbox" id="auto-backup" checked>
+                                                    <span class="switch"></span>
+                                                    <span>Enable automatic data backups</span>
+                                                </label>
+                                                <p class="setting-description">Your data will be backed up automatically according to your schedule.</p>
+                                            </div>
+                                            
+                                            <div class="settings-group">
+                                                <h4>Backup Frequency</h4>
+                                                <select id="backup-frequency">
+                                                    <option value="daily">Daily</option>
+                                                    <option value="weekly" selected>Weekly</option>
+                                                    <option value="monthly">Monthly</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="settings-group">
+                                                <h4>Backup Retention</h4>
+                                                <select id="backup-retention">
+                                                    <option value="1">Keep for 1 month</option>
+                                                    <option value="3" selected>Keep for 3 months</option>
+                                                    <option value="6">Keep for 6 months</option>
+                                                    <option value="12">Keep for 1 year</option>
+                                                    <option value="forever">Keep forever</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="settings-card">
+                                            <h3>Security Settings</h3>
+                                            <div class="settings-group">
+                                                <label class="switch-label">
+                                                    <input type="checkbox" id="encrypt-backups" checked>
+                                                    <span class="switch"></span>
+                                                    <span>Encrypt all backups</span>
+                                                </label>
+                                                <p class="setting-description">All automatic backups will be encrypted with your encryption key.</p>
+                                            </div>
+                                            
+                                            <div class="settings-group">
+                                                <h4>Encryption Key</h4>
+                                                <button class="change-key-btn">
+                                                    <i data-feather="key"></i> Change Encryption Key
+                                                </button>
+                                                <p class="setting-description warning">Warning: If you lose your encryption key, you will not be able to access your backups.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="settings-card">
+                                            <h3>Storage Settings</h3>
+                                            <div class="settings-group">
+                                                <h4>Backup Storage Location</h4>
+                                                <select id="storage-location">
+                                                    <option value="cloud" selected>Cloud Storage</option>
+                                                    <option value="local">Local Download</option>
+                                                    <option value="email">Email</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="storage-usage">
+                                                <h4>Storage Usage</h4>
+                                                <div class="usage-meter">
+                                                    <div class="usage-fill" style="width: 15%;"></div>
+                                                </div>
+                                                <div class="usage-stats">
+                                                    <span>7.5 MB used</span>
+                                                    <span>50 MB available</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="settings-actions">
+                                            <button class="settings-save-btn">Save Settings</button>
+                                            <button class="manual-backup-btn">
+                                                <i data-feather="download"></i> Create Manual Backup Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Export Download Modal -->
+        <div id="export-download-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Export Complete</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="export-complete-content">
+                    <div class="export-success-icon">
+                        <i data-feather="check-circle"></i>
+                    </div>
+                    <h3>Your data has been exported successfully!</h3>
+                    <p>Your export is ready to download.</p>
+                    
+                    <div class="export-file-info">
+                        <div class="file-icon">
+                            <i data-feather="file-text"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-name">financial_export_2025-05-01.csv</div>
+                            <div class="file-meta">
+                                <span class="file-size">142 KB</span>
+                                <span class="file-date">May 1, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="download-actions">
+                        <a href="#" class="download-btn">
+                            <i data-feather="download"></i> Download File
+                        </a>
+                        <button class="copy-link-btn">
+                            <i data-feather="link"></i> Copy Download Link
+                        </button>
+                    </div>
+                    
+                    <div class="export-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="save-export-history">
+                            <span>Save this export in my export history</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification-container" class="notification-container"></div>
+        <script src="../js/features.js"></script>
+        <script src="../js/export-data.js"></script>
+    </body>
+</html>
