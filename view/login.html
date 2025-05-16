@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fitness Tracker - Login</title>
-    <link rel="stylesheet" href="../css/login.css" />
+    <link rel="stylesheet" href="../assets/css/login.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
                     <p>Welcome back! Please enter your details</p>
                 </div>
                 
-                <form action="#" method="POST">
+                <form action="../controller/logincheck.php" method="POST" onsubmit="return validateLogin()" id="login-form" novalidate>
                     <div class="input-group">
                         <label for="username">Username</label>
                         <div class="input-box">
@@ -55,7 +55,7 @@
                             <span class="checkmark"></span>
                             <span>Remember me</span>
                         </label>
-                        <a href="../pages/forget-password.html" class="forgot-link">Forgot password?</a>
+                        <a href="forget-password.html" class="forgot-link">Forgot password?</a>
                     </div>
                     
                     <button type="submit" class="btn-primary">Sign In</button>
@@ -78,7 +78,7 @@
                     <div class="login-register">
                         <p>
                             Don't have an account?
-                            <a href="../pages/register.html">Create Account</a>
+                            <a href="register.html">Create Account</a>
                         </p>
                     </div>
                 </form>
@@ -90,6 +90,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <!-- Custom JavaScript -->
-    <script src="../js/login.js"></script>
+    <script src="../assets/js/login.js"></script>
 </body>
 </html>

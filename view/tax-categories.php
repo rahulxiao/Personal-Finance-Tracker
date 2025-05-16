@@ -1,3 +1,8 @@
+
+<?php
+    session_start();
+    if(isset($_SESSION['status'])){
+?>
 <!doctype html>
 <html lang="en">
     <head>
@@ -495,3 +500,10 @@
         <script src="../js/tax-categories.js"></script>
     </body>
 </html>
+
+<?php
+    }else{
+        header('location: login.html');
+    }
+
+?>

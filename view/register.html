@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fitness Tracker - Register</title>
-    <link rel="stylesheet" href="../css/register.css" />
+    <link rel="stylesheet" href="../assets/css/register.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
                     <p>Please fill in your information to get started</p>
                 </div>
                 
-                <form action="#" method="POST" id="register-form" novalidate>
+                <form action="#" method="POST" onsubmit="return validRegister()" id="register-form" novalidate>
                     <div class="form-row">
                         <div class="input-group">
                             <label for="firstname">First Name</label>
@@ -108,7 +108,7 @@
                         <div class="error-message" id="terms-error"></div>
                     </div>
                     
-                    <button type="button" class="btn-primary">Create Account</button>                      
+                    <button type="submit" class="btn-primary">Create Account</button>                 
                     
                     <div class="alternative-register">
                         <span class="divider">Or register with</span>
@@ -140,6 +140,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <!-- Custom JavaScript -->
-    <script src="../js/register.js"></script>
+    <script src="../assets/js/register.js"></script>
 </body>
 </html>

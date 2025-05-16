@@ -1,3 +1,8 @@
+<?php
+    session_start();
+    if(isset($_SESSION['status'])){
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -11,8 +16,8 @@
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="../css/feature.css" />
-    <link rel="stylesheet" href="../css/budget-goals.css" />
+    <link rel="stylesheet" href="../assets/css/feature.css" />
+    <link rel="stylesheet" href="../assets/css/budget-goals.css" />
 </head>
 
 <body>
@@ -29,10 +34,10 @@
                     <a href="index.html"><i data-feather="home"></i> Dashboard</a>
                 </li>
                 <li data-page="features">
-                    <a href="index.html"><i data-feather="grid"></i> Features</a>
+                    <a href="features.php"><i data-feather="grid"></i> Features</a>
                 </li>
                 <li class="active" data-page="budget-goals">
-                    <a href="budget-goals.html"><i data-feather="target"></i> Budget Goals</a>
+                    <a href="budget-goals.php"><i data-feather="target"></i> Budget Goals</a>
                 </li>
             </ul>
         </nav>
@@ -145,8 +150,14 @@
     </div>
 
     <div id="notification-container" class="notification-container"></div>
-    <script src="../js/features.js"></script>
-    <script src="../js/budget-goal.js"></script>
+    <script src="../assets/js/features.js"></script>
+    <script src="../assets/js/budget-goal.js"></script>
 </body>
 
 </html>
+<?php
+    }else{
+        header('location: login.html');
+    }
+
+?>

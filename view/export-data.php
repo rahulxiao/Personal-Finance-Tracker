@@ -1,0 +1,399 @@
+<?php
+    session_start();
+    if(isset($_SESSION['status'])){
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceFlow - Export Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/feature.css">
+    <link rel="stylesheet" href="../assent/css/export-data.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>FinanceFlow</h1>
+                <button id="sidebar-toggle" class="sidebar-toggle mobile-only">
+                    <i data-feather="menu"></i>
+                </button>
+            </div>
+            <ul class="sidebar-menu">
+                <li data-page="dashboard">
+                    <a href="##########"><i data-feather="home"></i> Dashboard</a>
+                </li>
+                <li class="ac" data-page="features">
+                    <a href="features.html"><i data-feather="grid"></i> Features</a>
+                </li>
+                <li class="active" data-page="export-data">
+                    <a href="export-data.html"><i data-feather="download"></i> Export Data</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="page-header">
+                <h1 id="page-title">Export Data</h1>
+                <div class="date-display" id="current-date"></div>
+            </header>
+
+            <div class="feature-content">
+                <div class="page-actions">
+                    <button class="back-button" onclick="window.location.href='../pages/features.html'">
+                        <i data-feather="arrow-left"></i> Back to Features
+                    </button>
+                    <div class="export-nav-tabs">
+                        <button class="export-nav-tab active" data-tab="wizard">Export Wizard</button>
+                        <button class="export-nav-tab" data-tab="format">Format Selector</button>
+                        <button class="export-nav-tab" data-tab="archive">Archive Manager</button>
+                    </div>
+                </div>
+
+                <div class="export-tab-content">
+                    <!-- Export Wizard Tab -->
+                    <div class="export-tab-pane active" id="wizard-tab">
+                        <div class="feature-description">
+                            <div class="feature-icon large">
+                                <i data-feather="download"></i>
+                            </div>
+                            <h2>Export Wizard</h2>
+                            <p>Customize your data export with the options below.</p>
+                        </div>
+                        <form id="export-wizard-form" class="export-wizard-form">
+                            <div class="form-group">
+                                <label for="data-type">Data Type</label>
+                                <select id="data-type" name="data-type" required>
+                                    <option value="">Select data type</option>
+                                    <option value="transactions">Transactions</option>
+                                    <option value="budgets">Budgets</option>
+                                    <option value="taxes">Tax Information</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date-range">Date Range</label>
+                                <select id="date-range" name="date-range" required>
+                                    <option value="">Select date range</option>
+                                    <option value="last-30">Last 30 Days</option>
+                                    <option value="last-90">Last 90 Days</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="start-date">Start Date</label>
+                                <input type="date" id="start-date" name="start-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="end-date">End Date</label>
+                                <input type="date" id="end-date" name="end-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="file-format">File Format</label>
+                                <select id="file-format" name="file-format" required>
+                                    <option value="">Select format</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="qbo">QBO</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="file-extension">File Extension</label>
+                                <input type="text" id="file-extension" name="file-extension" readonly value=".csv" placeholder=".csv">
+                            </div>
+                            <div class="form-group">
+                                <label for="account">Account</label>
+                                <select id="account" name="account" required>
+                                    <option value="">Select account</option>
+                                    <option value="all">All Accounts</option>
+                                    <option value="checking">Checking</option>
+                                    <option value="savings">Savings</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Currency</label>
+                                <select id="currency" name="currency" required>
+                                    <option value="">Select currency</option>
+                                    <option value="usd">USD</option>
+                                    <option value="eur">EUR</option>
+                                    <option value="gbp">GBP</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="encryption">Encryption</label>
+                                <select id="encryption" name="encryption">
+                                    <option value="none">None</option>
+                                    <option value="aes-256">AES-256</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filename">File Name</label>
+                                <input type="text" id="filename" name="filename" placeholder="export_data">
+                            </div>
+                            <div class="form-group">
+                                <label for="sort-by">Sort By</label>
+                                <select id="sort-by" name="sort-by">
+                                    <option value="date-desc">Date (Descending)</option>
+                                    <option value="date-asc">Date (Ascending)</option>
+                                    <option value="amount-desc">Amount (Descending)</option>
+                                    <option value="amount-asc">Amount (Ascending)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="max-records">Max Records</label>
+                                <input type="number" id="max-records" name="max-records" min="1" max="10000" placeholder="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="language">Report Language</label>
+                                <select id="language" name="language">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="UTC">UTC</option>
+                                    <option value="America/New_York">America/New_York</option>
+                                    <option value="Europe/London">Europe/London</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="compression">Compression</label>
+                                <select id="compression" name="compression">
+                                    <option value="none">None</option>
+                                    <option value="zip">ZIP</option>
+                                    <option value="gzip">GZIP</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="include-headers">Include Headers</label>
+                                <input type="checkbox" id="include-headers" name="include-headers" checked>
+                            </div>
+                            <div class="form-group">
+                                <label for="include-notes">Include Notes</label>
+                                <input type="checkbox" id="include-notes" name="include-notes">
+                            </div>
+                            <button type="submit" class="export-btn">
+                                <i data-feather="download"></i> Export Data
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Format Selector Tab -->
+                    <div class="export-tab-pane" id="format-tab">
+                        <div class="feature-description">
+                            <div class="feature-icon large">
+                                <i data-feather="file"></i>
+                            </div>
+                            <h2>Choose Your Export Format</h2>
+                            <p>Select the right file format for your needs. Each format has different benefits depending on how you plan to use your data.</p>
+                        </div>
+                        <div class="format-comparison">
+                            <div class="format-table">
+                                <div class="table-header">
+                                    <div class="</div>
+                                    <div class="header-cell feature-column">Features</div>
+                                    <div class="header-cell">CSV</div>
+                                    <div class="header-cell">PDF</div>
+                                    <div class="header-cell">QBO</div>
+                                    <div class="header-cell">JSON</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">Editable</div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">Formatted Report</div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">Software Import</div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">Excel Compatible</div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">QuickBooks Compatible</div>
+                                    <div><i data-feather="check" class="icon-partial"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="feature-column">Developer Friendly</div>
+                                    <div><i data-feather="check" class="icon-partial"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="x" class="icon-error"></i></div>
+                                    <div><i data-feather="check" class="icon-success"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="format-quick-export">
+                            <h3>Quick Export</h3>
+                            <p>Choose a format and click to export all your recent transactions.</p>
+                            <div class="quick-export-buttons">
+                                <button class="quick-export-btn" data-format="csv"><i data-feather="file-text"></i><span>CSV</span></button>
+                                <button class="quick-export-btn" data-format="pdf"><i data-feather="file"></i><span>PDF</span></button>
+                                <button class="quick-export-btn" data-format="qbo"><i data-feather="hash"></i><span>QBO</span></button>
+                                <button class="quick-export-btn" data-format="json"><i data-feather="code"></i><span>JSON</span></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Archive Manager Tab -->
+                    <div class="export-tab-pane" id="archive-tab">
+                        <div class="feature-description">
+                            <div class="feature-icon large">
+                                <i data-feather="archive"></i>
+                            </div>
+                            <h2>Manage Your Exported Data</h2>
+                            <p>View your previous exports, download archived data, and manage your automatic export schedules.</p>
+                        </div>
+                        <div class="archive-tabs">
+                            <button class="archive-tab active" data-archive-tab="exports">Previous Exports</button>
+                            <button class="archive-tab" data-archive-tab="schedules">Scheduled Exports</button>
+                            <button class="archive-tab" data-archive-tab="settings">Backup Settings</button>
+                        </div>
+                        <div class="archive-tab-content">
+                            <div class="archive-tab-pane active" id="exports-tab">
+                                <div class="section-header">
+                                    <h3>Previous Exports</h3>
+                                    <div class="export-search">
+                                        <input type="text" placeholder="Search exports...">
+                                        <button class="search-btn"><i data-feather="search"></i></button>
+                                    </div>
+                                </div>
+                                <div class="export-history">
+                                    <div class="export-history-item">
+                                        <div class="export-info">
+                                            <div class="export-type">
+                                                <i data-feather="file-text"></i>
+                                                <span class="format-badge">CSV</span>
+                                            </div>
+                                            <div class="export-details">
+                                                <h4>Transactions and Budget Goals</h4>
+                                                <div class="export-meta">
+                                                    <span class="export-date">Apr 28, 2025</span>
+                                                    <span class="export-size">142 KB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="export-actions">
+                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
+                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="export-history-item">
+                                        <div class="export-info">
+                                            <div class="export-type">
+                                                <i data-feather="file"></i>
+                                                <span class="format-badge">PDF</span>
+                                            </div>
+                                            <div class="export-details">
+                                                <h4>Tax Information Summary</h4>
+                                                <div class="export-meta">
+                                                    <span class="export-date">Apr 15, 2025</span>
+                                                    <span class="export-size">3.2 MB</span>
+                                                    <span class="security-badge"><i data-feather="lock"></i> Encrypted</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="export-actions">
+                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
+                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="export-history-item">
+                                        <div class="export-info">
+                                            <div class="export-type">
+                                                <i data-feather="hash"></i>
+                                                <span class="format-badge">QBO</span>
+                                            </div>
+                                            <div class="export-details">
+                                                <h4>QuickBooks Export - March 2025</h4>
+                                                <div class="export-meta">
+                                                    <span class="export-date">Apr 2, 2025</span>
+                                                    <span class="export-size">256 KB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="export-actions">
+                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
+                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="export-history-item">
+                                        <div class="export-info">
+                                            <div class="export-type">
+                                                <i data-feather="code"></i>
+                                                <span class="format-badge">JSON</span>
+                                            </div>
+                                            <div class="export-details">
+                                                <h4>Complete Financial Data</h4>
+                                                <div class="export-meta">
+                                                    <span class="export-date">Mar 15, 2025</span>
+                                                    <span class="export-size">1.7 MB</span>
+                                                    <span class="security-badge"><i data-feather="lock"></i> Encrypted</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="export-actions">
+                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
+                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+    <script src="../assets/js/features.js"></script>
+    <script src="../assets/js/export-data.js"></script>
+    <script>
+        feather.replace();
+        document.getElementById('file-format').addEventListener('change', function() {
+            const format = this.value;
+            const extensionMap = {
+                'csv': '.csv',
+                'pdf': '.pdf',
+                'qbo': '.qbo',
+                'json': '.json'
+            };
+            document.getElementById('file-extension').value = extensionMap[format] || '';
+        });
+    </script>
+</body>
+</html>
+
+<?php
+    }else{
+        header('location: login.html');
+    }
+
+?>

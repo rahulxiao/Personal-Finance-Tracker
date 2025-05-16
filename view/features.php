@@ -1,3 +1,8 @@
+<?php
+    session_start();
+    if(isset($_SESSION['status'])){
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,7 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="../css/feature.css" />
+    <link rel="stylesheet" href="../assets/css/feature.css" />
 </head>
 
 <body>
@@ -29,6 +34,9 @@
                 </li>
                 <li class="active" data-page="features">
                     <a href="features.html"><i data-feather="grid"></i> Features</a>
+                </li>
+                <li class="activ" data-page="features">
+                    <a href="../index.html"><i data-feather="#####"></i> Log Out</a>
                 </li>
             </ul>
         </nav>
@@ -56,7 +64,7 @@
                     <p>Record and analyze your various income sources</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='budget-goals.html'">
+                <div class="feature-card" onclick="window.location.href='budget-goals.php'">
                     <div class="feature-icon">
                         <i data-feather="target"></i>
                     </div>
@@ -64,7 +72,7 @@
                     <p>Set and track your financial budget goals</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='bill-reminders.html'">
+                <div class="feature-card" onclick="window.location.href='bill-reminders.php'">
                     <div class="feature-icon">
                         <i data-feather="bell"></i>
                     </div>
@@ -72,7 +80,7 @@
                     <p>Never miss a payment with scheduled bill reminders</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='reports-graphs.html'">
+                <div class="feature-card" onclick="window.location.href='reports-graphs.php'">
                     <div class="feature-icon">
                         <i data-feather="bar-chart-2"></i>
                     </div>
@@ -80,7 +88,7 @@
                     <p>Visualize your financial data through interactive graphs</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='account-linking.html'">
+                <div class="feature-card" onclick="window.location.href='account-linking.php'">
                     <div class="feature-icon">
                         <i data-feather="link"></i>
                     </div>
@@ -124,7 +132,14 @@
     </div>
 
     <div id="notification-container" class="notification-container"></div>
-    <script src="../js/features.js"></script>
+    <script src="../assets/js/features.js"></script>
 </body>
 
 </html>
+
+<?php
+    }else{
+        header('location: login.html');
+    }
+
+?>
