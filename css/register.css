@@ -1,0 +1,467 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+:root {
+    /* Dark Mode Colors - Matching login page */
+    --bg-dark: #121212;
+    --card-bg: #1e1e1e;
+    --card-hover: #252525;
+    --primary-color: #6366f1;
+    --primary-hover: #818cf8;
+    --text-primary: #f8f9fa;
+    --text-secondary: #9ca3af;
+    --border-color: #2d2d2d;
+    --input-bg: #242424;
+    --input-focus: #333;
+    --error-color: #f87171;
+    --success-color: #4ade80;
+    --shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Main container */
+.main-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Register container */
+.register-container {
+    width: 100%;
+    max-width: 580px;
+    margin: 2rem 0;
+}
+
+.register-card {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    padding: 2.5rem;
+    position: relative;
+}
+
+.back-button {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 5;
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.back-link:hover {
+    background-color: var(--card-hover);
+    transform: translateX(-3px);
+}
+
+.back-link ion-icon {
+    font-size: 1.25rem;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.logo ion-icon {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.logo h4 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.card-header h1 {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.card-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Form styling */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 580px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.input-box {
+    position: relative;
+    width: 100%;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.input-box input:focus {
+    border-color: var(--primary-color);
+    background-color: var(--input-focus);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.input-box input.error {
+    border-color: var(--error-color);
+    background-color: rgba(248, 113, 113, 0.05);
+}
+
+.input-box input::placeholder {
+    color: var(--text-secondary);
+}
+
+.input-box .icon {
+    position: absolute;
+    top: 50%;
+    left: 0.875rem;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-box .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 0.875rem;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.input-box .toggle-password:hover {
+    color: var(--text-primary);
+}
+
+/* Error message styling */
+.error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    min-height: 1.2rem;
+    display: block;
+}
+
+/* Password requirements styling */
+.password-requirements {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.password-requirements p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.password-requirements ul {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.requirement {
+    margin-bottom: 0.25rem;
+    color: var(--error-color);
+    position: relative;
+    padding-left: 1.25rem;
+}
+
+.requirement::before {
+    content: "×";
+    position: absolute;
+    left: 0;
+    color: var(--error-color);
+}
+
+.requirement.valid {
+    color: var(--success-color);
+}
+
+.requirement.valid::before {
+    content: "✓";
+    color: var(--success-color);
+}
+
+/* Terms and privacy checkbox */
+.terms-privacy {
+    margin-bottom: 1.75rem;
+}
+
+.terms-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+}
+
+.terms-check input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+    min-width: 18px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.terms-check:hover input ~ .checkmark {
+    border-color: var(--primary-color);
+}
+
+.terms-check input:checked ~ .checkmark {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.terms-check input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.terms-check .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.terms-check span a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.terms-check span a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Button styling */
+.btn-primary {
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--primary-color), #818cf8);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #5254cc, #7579ea);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Alternative registration methods */
+.alternative-register {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.divider::before {
+    margin-right: 0.75rem;
+}
+
+.divider::after {
+    margin-left: 0.75rem;
+}
+
+.social-register {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.btn-social {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-social:hover {
+    border-color: var(--primary-color);
+    background-color: var(--card-hover);
+    transform: translateY(-3px);
+}
+
+.btn-social ion-icon {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+}
+
+.register-login {
+    text-align: center;
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.register-login a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.register-login a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .register-card {
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+    }
+    
+    .back-button {
+        top: 1rem;
+        left: 1rem;
+    }
+    
+    .input-box input {
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+    }
+}
