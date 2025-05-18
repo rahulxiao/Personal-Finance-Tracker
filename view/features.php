@@ -56,7 +56,7 @@
                     <p>Organize and track spending across different categories</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='income-recording.html'">
+                <div class="feature-card" onclick="window.location.href='../Mashrur/income.php'">
                     <div class="feature-icon">
                         <i data-feather="trending-up"></i>
                     </div>
