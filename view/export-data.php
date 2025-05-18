@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <link rel="stylesheet" href="../assets/css/feature.css">
-    <link rel="stylesheet" href="../assent/css/export-data-eport.css">
+    <link rel="stylesheet" href="../assent/css/export-data.css">
 </head>
 <body>
     <div class="app-container">

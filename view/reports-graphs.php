@@ -19,8 +19,8 @@
       type="text/javascript"
       src="https://www.gstatic.com/charts/loader.js"
     ></script>
-    <link rel="stylesheet" href="../assets/css/feature.css" />
-    <link rel="stylesheet" href="../assets/css/reports-graphs.css" />
+    <link rel="stylesheet" href="../css/feature.css" />
+    <link rel="stylesheet" href="../css/reports-graphs.css" />
   </head>
   <body>
     <div class="app-container">
@@ -36,12 +36,12 @@
             <a href="########"><i data-feather="home"></i> Dashboard</a>
           </li>
           <li class="ac" data-page="features">
-            <a href="features.php"
+            <a href="../pages/features.html"
               ><i data-feather="grid"></i> Features</a
             >
           </li>
           <li class="active" data-page="features">
-            <a href="reports-graphs.php"
+            <a href="../pages/features.html"
               ><i data-feather="bar-chart-2"></i> Reports & Graphs</a
             >
           </li>
@@ -209,8 +209,8 @@
     </div>
 
     <div id="notification-container" class="notification-container"></div>
-    <script src="../assets/js/features.js"></script>
-    <script src="../assets/js/reports-graphs.js"></script>
+    <script src="../js/features.js"></script>
+    <script src="../js/reports-graphs.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         // Initialize Feather Icons
