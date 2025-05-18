@@ -33,7 +33,7 @@
                     <a href="##########"><i data-feather="home"></i> Dashboard</a>
                 </li>
                 <li class="active" data-page="features">
-                    <a href="features.html"><i data-feather="grid"></i> Features</a>
+                    <a href="features.php"><i data-feather="grid"></i> Features</a>
                 </li>
                 <li class="activ" data-page="features">
                     <a href="../index.html"><i data-feather="#####"></i> Log Out</a>

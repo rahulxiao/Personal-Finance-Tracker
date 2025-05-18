@@ -29,13 +29,13 @@
                     <p>Please fill in your information to get started</p>
                 </div>
                 
-                <form action="#" method="POST" onsubmit="return validRegister()" id="register-form" novalidate>
+                <form action="../controller/singup.php" method="POST" onsubmit="return validRegister()" id="register-form" novalidate>
                     <div class="form-row">
                         <div class="input-group">
                             <label for="firstname">First Name</label>
                             <div class="input-box">
                                 <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
-                                <input type="text" name="firstname" id="firstname" placeholder="Enter your first name" required />
+                                <input type="firstname" name="firstname" id="firstname" placeholder="Enter your first name" required />
                             </div>
                             <div class="error-message" id="firstname-error"></div>
                         </div>
@@ -44,7 +44,7 @@
                             <label for="lastname">Last Name</label>
                             <div class="input-box">
                                 <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
-                                <input type="text" name="lastname" id="lastname" placeholder="Enter your last name" required />
+                                <input type="lastname" name="lastname" id="lastname" placeholder="Enter your last name" required />
                             </div>
                             <div class="error-message" id="lastname-error"></div>
                         </div>
@@ -54,7 +54,7 @@
                         <label for="username">Username</label>
                         <div class="input-box">
                             <span class="icon"><ion-icon name="at-outline"></ion-icon></span>
-                            <input type="text" name="username" id="username" placeholder="Choose a username" required />
+                            <input type="username" name="username" id="username" placeholder="Choose a username" required />
                         </div>
                         <div class="error-message" id="username-error"></div>
                     </div>

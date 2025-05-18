@@ -1,97 +1,51 @@
-// // Check for error parameters in URL when page loads
-// const urlParams = new URLSearchParams(window.location.search);
-// const error = urlParams.get('error');
-// const errorMsgElement = document.getElementById('error-message');
 
-// if (error === 'empty') {
-//     errorMsgElement.innerText = 'Username and password cannot be empty';
-//     errorMsgElement.classList.add('show');
-// } else if (error === 'invalid') {
-//     errorMsgElement.innerText = 'Invalid username or password. Note: For demo, username and password must be the same.';
-//     errorMsgElement.classList.add('show');
-// }
 
-// // Password toggle functionality
-// const togglePassword = document.querySelector('.toggle-password');
-// const passwordInput = document.getElementById('password');
+function validateLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const form = document.getElementById('login-form');
+    let isValid = true;
 
-// if (togglePassword && passwordInput) {
-//     togglePassword.addEventListener('click', function() {
-//         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-//         passwordInput.setAttribute('type', type);
-        
-//         // Toggle icon
-//         const eyeIcon = this.querySelector('ion-icon');
-//         if (eyeIcon) {
-//             eyeIcon.setAttribute('name', type === 'password' ? 'eye-outline' : 'eye-off-outline');
-//         }
-//     });
-// }
+    // Reset any previous error states
+    form.querySelectorAll('.input-box').forEach(box => box.classList.remove('error'));
+    form.querySelectorAll('.error-message').forEach(msg => msg.remove());
 
-// // Form validation function
-// function validateLogin() {
-//     const username = document.getElementById('username').value.trim();
-//     const password = document.getElementById('password').value.trim();
-//     const errorMsgElement = document.getElementById('error-message');
-    
-//     // Basic validation
-//     if (username === '' || password === '') {
-//         errorMsgElement.innerText = 'Username and password cannot be empty';
-//         errorMsgElement.classList.add('show');
-//         return false;
-//     }
-    
-//     // Let the form submit to server for actual validation
-//     return true;
-// }
+    // Username validation
+    if (!username) {
+        showError('username', 'Username is required');
+        isValid = false;
+    } else if (username.length < 3) {
+        showError('username', 'Username must be at least 3 characters');
+        isValid = false;
+    }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// function validateLogin() {
-//     const username = document.getElementById('username').value.trim();
-//     const password = document.getElementById('password').value.trim();
-//     const form = document.getElementById('login-form');
-//     let isValid = true;
+    // Password validation
+    if (!password) {
+        showError('password', 'Password is required');
+        isValid = false;
+    } else if (password.length < 6) {
+        showError('password', 'Password must be at least 6 characters');
+        isValid = false;
+    }
 
-//     // Reset any previous error states
-//     form.querySelectorAll('.input-box').forEach(box => box.classList.remove('error'));
-//     form.querySelectorAll('.error-message').forEach(msg => msg.remove());
+    // If all is valid, redirect
+    if (isValid) {
+        window.location.href = "features.php"; // Replace with your desired page
+    }
 
-//     // Username validation
-//     if (!username) {
-//         showError('username', 'Username is required');
-//         isValid = false;
-//     } else if (username.length < 3) {
-//         showError('username', 'Username must be at least 3 characters');
-//         isValid = false;
-//     }
+    return false; // Prevent form default submission
 
-//     // Password validation
-//     if (!password) {
-//         showError('password', 'Password is required');
-//         isValid = false;
-//     } else if (password.length < 6) {
-//         showError('password', 'Password must be at least 6 characters');
-//         isValid = false;
-//     }
+    function showError(inputId, message) {
+    const inputBox = document.getElementById(inputId).parentElement;
+    inputBox.classList.add('error');
 
-//     // If all is valid, redirect
-//     if (isValid) {
-//         window.location.href = "features.php"; // Replace with your desired page
-//     }
+    const errorMessage = document.createElement('span');
+    errorMessage.className = 'error-message';
+    errorMessage.style.color = 'red';
+    errorMessage.textContent = message;
+    inputBox.appendChild(errorMessage);
+}
 
-//     return false; // Prevent form default submission
-
-//     function showError(inputId, message) {
-//     const inputBox = document.getElementById(inputId).parentElement;
-//     inputBox.classList.add('error');
-
-//     const errorMessage = document.createElement('span');
-//     errorMessage.className = 'error-message';
-//     errorMessage.style.color = 'red';
-//     errorMessage.textContent = message;
-//     inputBox.appendChild(errorMessage);
-// }
-
-// }
+}
 
 
