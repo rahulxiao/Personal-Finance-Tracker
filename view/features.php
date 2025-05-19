@@ -33,9 +33,9 @@
                     <a href="##########"><i data-feather="home"></i> Dashboard</a>
                 </li>
                 <li class="active" data-page="features">
-                    <a href="features.html"><i data-feather="grid"></i> Features</a>
+                    <a href="features.php"><i data-feather="grid"></i> Features</a>
                 </li>
-                <li class="activ" data-page="features">
+                <li class="activ" action="../controller/logout.php" data-page="features">
                     <a href="../index.html"><i data-feather="#####"></i> Log Out</a>
                 </li>
             </ul>
@@ -48,7 +48,7 @@
             </header>
 
             <div class="features-grid">
-                <div class="feature-card" onclick="window.location.href='expense.php'">
+                <div class="feature-card" onclick="window.location.href='expense-categories.html'">
                     <div class="feature-icon">
                         <i data-feather="tag"></i>
                     </div>
@@ -56,7 +56,7 @@
                     <p>Organize and track spending across different categories</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='income.php'">
+                <div class="feature-card" onclick="window.location.href='income-recording.html'">
                     <div class="feature-icon">
                         <i data-feather="trending-up"></i>
                     </div>
@@ -96,7 +96,7 @@
                     <p>Connect your bank accounts for automatic tracking</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='Debts.php'">
+                <div class="feature-card" onclick="window.location.href='debt-tracking.html'">
                     <div class="feature-icon">
                         <i data-feather="trending-down"></i>
                     </div>
@@ -141,4 +141,5 @@
     }else{
         header('location: login.html');
     }
+
 ?>

@@ -30,10 +30,10 @@
                     <a href="###########"><i data-feather="home"></i> Dashboard</a>
                 </li>
                 <li class="actt" data-page="features">
-                    <a href="features.html"><i data-feather="grid"></i> Features</a>
+                    <a href="features.php"><i data-feather="grid"></i> Features</a>
                 </li>
                 <li class="active" data-page="features">
-                    <a href="account-linking.html"><i data-feather="link"></i> Account Linking</a>
+                    <a href="account-linking.php"><i data-feather="link"></i> Account Linking</a>
                 </li>
             </ul>
         </nav>

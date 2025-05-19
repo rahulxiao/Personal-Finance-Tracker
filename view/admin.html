@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JustAdmin - Dashboard</title>
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-feather="box"></i>
+                <h2>Justadmin</h2>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Menu</h3>
+                <ul class="sidebar-menu">
+                    <li class="active">
+                        <a href="#">
+                            <i data-feather="grid"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="admin-user.html">
+                            <i data-feather="users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i data-feather="file-text"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Miscellaneous</h3>
+                <ul class="sidebar-menu">
+                    
+                    <li>
+                        <a href="#">
+                            <i data-feather="mail"></i>
+                            <span>Mailbox</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i data-feather="settings"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="logout">
+                <a href="#">
+                    <i data-feather="log-out"></i>
+                    <span>Log out</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation -->
+            <nav class="top-nav">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="icon-btn">
+                        <i data-feather="search"></i>
+                    </button>
+                    <button class="icon-btn notification-btn">
+                        <i data-feather="bell"></i>
+                    </button>
+                    
+                    <div class="user-profile">
+                        <div class="profile-img">
+                            <img src="../assets/images/profile.jpg" alt="Tika Soekotika" onerror="this.src='../api/placeholder/40/40';this.onerror='';">
+                        </div>
+                        <div class="profile-info">
+                            <h4>Tika Soekotika</h4>
+                            <span>Admin</span>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <div>
+                        <h2>Hi, Tika</h2>
+                        <p>Welcome back to Justadmin Dashboard!</p>
+                    </div>
+                    <div class="welcome-actions">
+                        <button class="download-btn">
+                            <i data-feather="download"></i>
+                            Download
+                        </button>
+                        <button class="add-btn">
+                            <i data-feather="plus"></i>
+                            Add deadline
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Total earning</h3>
+                            <h2>$22,800.50</h2>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i data-feather="dollar-sign"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Total spending</h3>
+                            <h2>$1,096.00</h2>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i data-feather="shopping-cart"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Lead conversion</h3>
+                            <h2>78.93%</h2>
+                        </div>
+                        <div class="stat-icon cyan">
+                            <i data-feather="users"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Goal this month</h3>
+                            <h2>$32,200.00</h2>
+                        </div>
+                        <div class="stat-icon green">
+                            <i data-feather="target"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts and Tables Section -->
+                <div class="dashboard-grid">
+                    <!-- Sales Chart -->
+                    <div class="dashboard-card sales-chart">
+                        <div class="card-header">
+                            <h3>Overall sales</h3>
+                            <div class="date-filter">
+                                <span>Sept 07 - Sept 12</span>
+                                <i data-feather="calendar"></i>
+                            </div>
+                        </div>
+                        <h2 class="total-sales">$80,842.52</h2>
+                        <div class="chart-container" id="sales-chart">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Earnings Chart -->
+                    <div class="dashboard-card earnings-chart">
+                        <div class="card-header">
+                            <h3>Total earning</h3>
+                            <div class="date-filter">
+                                <span>Month</span>
+                                <i data-feather="chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="donut-chart" id="earnings-chart">
+                            <div class="donut-center">
+                                <h3>88%</h3>
+                                <p>Earnings</p>
+                            </div>
+                        </div>
+                        <p class="chart-note">88% more earnings than last month. Keep watching to find out your earnings.</p>
+                    </div>
+                    
+                    <!-- Invoice Table -->
+                    <div class="dashboard-card invoice-table">
+                        <div class="card-header">
+                            <h3>New invoice</h3>
+                            <button class="more-btn">
+                                <i data-feather="more-vertical"></i>
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Invoice ID</th>
+                                        <th>Invoice Name</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>INV-012-3456789</td>
+                                        <td>Mailchimp support</td>
+                                        <td>29-12-22</td>
+                                        <td>$220.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>INV-026-3456789</td>
+                                        <td>Cash withdrawal bank</td>
+                                        <td>24-12-22</td>
+                                        <td>$249.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="dashboard-card recent-activity">
+                        <div class="card-header">
+                            <h3>Recent Activity</h3>
+                            <button class="more-btn">
+                                <i data-feather="more-vertical"></i>
+                            </button>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-user">
+                                    <div class="user-avatar">
+                                        <img src="../api/placeholder/40/40" alt="Uchiha Itachi">
+                                    </div>
+                                    <div class="user-info">
+                                        <h4>Uchiha Itachi</h4>
+                                        <span>Just now</span>
+                                    </div>
+                                </div>
+                                <div class="activity-id">
+                                    <span>INV-054-2565789</span>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-user">
+                                    <div class="user-avatar">
+                                        <img src="../api/placeholder/40/40" alt="Haruno Sakura">
+                                    </div>
+                                    <div class="user-info">
+                                        <h4>Haruno Sakura</h4>
+                                        <span>15 minutes ago</span>
+                                    </div>
+                                </div>
+                                <div class="activity-id">
+                                    <span>INV-024-2456789</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="../assets/js/admin.js"></script>
+</body>
+</html>
