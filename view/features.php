@@ -30,12 +30,12 @@
             </div>
             <ul class="sidebar-menu">
                 <li data-page="dashboard">
-                    <a href="##########"><i data-feather="home"></i> Dashboard</a>
+                    <a href="dashboard.php"><i data-feather="home"></i> Dashboard</a>
                 </li>
                 <li class="active" data-page="features">
-                    <a href="features.php"><i data-feather="grid"></i> Features</a>
+                    <a href="features.html"><i data-feather="grid"></i> Features</a>
                 </li>
-                <li class="activ" action="../controller/logout.php" data-page="features">
+                <li class="activ" data-page="features">
                     <a href="../index.html"><i data-feather="#####"></i> Log Out</a>
                 </li>
             </ul>
@@ -48,7 +48,7 @@
             </header>
 
             <div class="features-grid">
-                <div class="feature-card" onclick="window.location.href='expense-categories.html'">
+                <div class="feature-card" onclick="window.location.href='expense.php'">
                     <div class="feature-icon">
                         <i data-feather="tag"></i>
                     </div>
@@ -56,7 +56,7 @@
                     <p>Organize and track spending across different categories</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='income-recording.html'">
+                <div class="feature-card" onclick="window.location.href='income.php'">
                     <div class="feature-icon">
                         <i data-feather="trending-up"></i>
                     </div>
@@ -72,7 +72,7 @@
                     <p>Set and track your financial budget goals</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='bill-reminders.php'">
+                <div class="feature-card" onclick="window.location.href='billReminders.php'">
                     <div class="feature-icon">
                         <i data-feather="bell"></i>
                     </div>
@@ -96,7 +96,7 @@
                     <p>Connect your bank accounts for automatic tracking</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='debt-tracking.html'">
+                <div class="feature-card" onclick="window.location.href='Debts.php'">
                     <div class="feature-icon">
                         <i data-feather="trending-down"></i>
                     </div>
@@ -104,7 +104,7 @@
                     <p>Monitor and plan your debt repayment strategy</p>
                 </div>
 
-                <div class="feature-card" onclick="window.location.href='savings-goals.html'">
+                <div class="feature-card" onclick="window.location.href='savingsGoals.php'">
                     <div class="feature-icon">
                         <i data-feather="dollar-sign"></i>
                     </div>
@@ -141,5 +141,4 @@
     }else{
         header('location: login.html');
     }
-
 ?>

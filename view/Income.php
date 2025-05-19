@@ -1,6 +1,37 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        $errors = [];
+        $success = false;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (empty($_POST['incomeSource'])) {
+                $errors[] = "Income source is required";
+            } elseif (strlen($_POST['incomeSource']) > 100) {
+                $errors[] = "Income source must be less than 100 characters";
+            }
+
+            if (empty($_POST['incomeAmount'])) {
+                $errors[] = "Income amount is required";
+            } elseif (!is_numeric($_POST['incomeAmount']) || $_POST['incomeAmount'] <= 0) {
+                $errors[] = "Income amount must be a positive number";
+            }
+
+            if (empty($_POST['incomeDate'])) {
+                $errors[] = "Income date is required";
+            } else {
+                $incomeDate = strtotime($_POST['incomeDate']);
+                if ($incomeDate === false) {
+                    $errors[] = "Invalid date format";
+                } elseif ($incomeDate > strtotime('today')) {
+                    $errors[] = "Income date cannot be in the future";
+                }
+            }
+
+            if (empty($errors)) {
+                $success = true;
+            }
+        }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +57,8 @@
         <p><a href="expense.php"><i data-feather="trending-down"></i> Expense</a></p>
         <p><a href="Debts.php"><i data-feather="credit-card"></i> Debt Tracking</a></p>
         <p><a href="budget-goals.php"><i data-feather="target"></i> Budget Goals</a></p>
-        <p><a href="bill-reminders.php"><i data-feather="bell"></i> Bill Reminders</a></p>
+        <p><a href="billReminders.php"><i data-feather="bell"></i> Bill Reminders</a></p>
+        <p><a href="savingsGoals.php"><i data-feather="dollar-sign"></i> Savings Goals</a></p>
         <p><a href="reports-graphs.php"><i data-feather="bar-chart-2"></i> Reports</a></p>
         <p><a href="../index.html"><i data-feather="log-out"></i> Log Out</a></p>
     </div>
@@ -48,6 +80,20 @@
             </div>
 
             <div id="addIncome">
+                <?php if (!empty($errors)): ?>
+                    <div class="error-messages">
+                        <?php foreach ($errors as $error): ?>
+                            <p class="error"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($success): ?>
+                    <div class="success-message">
+                        <p>Income added successfully!</p>
+                    </div>
+                <?php endif; ?>
+
                 <form id="incomeForm" action="../controller/incomeDB.php" method="POST">
                     <input type="text" id="source" name="incomeSource" placeholder="Income Source" required />
                     <input type="number" id="income" name="incomeAmount" placeholder="Amount" step="0.01" required />

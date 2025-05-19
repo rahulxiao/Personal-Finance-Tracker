@@ -1,6 +1,44 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        $errors = [];
+        $success = false;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (empty($_POST['expenseAmount'])) {
+                $errors[] = "Expense amount is required";
+            } elseif (!is_numeric($_POST['expenseAmount']) || $_POST['expenseAmount'] <= 0) {
+                $errors[] = "Expense amount must be a positive number";
+            }
+
+            if (empty($_POST['category'])) {
+                $errors[] = "Category is required";
+            } elseif (!in_array($_POST['category'], ['Food & Dining', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Shopping', 'Healthcare', 'Education', 'Personal Care', 'Other'])) {
+                $errors[] = "Invalid category selected";
+            }
+
+            if (empty($_POST['description'])) {
+                $errors[] = "Description is required";
+            } elseif (strlen($_POST['description']) > 200) {
+                $errors[] = "Description must be less than 200 characters";
+            }
+
+            if (empty($_POST['expenseDate'])) {
+                $errors[] = "Expense date is required";
+            } else {
+                $expenseDate = strtotime($_POST['expenseDate']);
+                if ($expenseDate === false) {
+                    $errors[] = "Invalid date format";
+                } elseif ($expenseDate > strtotime('today')) {
+                    $errors[] = "Expense date cannot be in the future";
+                }
+            }
+
+            if (empty($errors)) {
+                $success = true;
+         
+            }
+        }
 ?>
 
 <!DOCTYPE html>
@@ -85,7 +123,8 @@
         <p><a href="expense.php" class="active"><i data-feather="trending-down"></i> Expense</a></p>
         <p><a href="Debts.php"><i data-feather="credit-card"></i> Debt Tracking</a></p>
         <p><a href="budget-goals.php"><i data-feather="target"></i> Budget Goals</a></p>
-        <p><a href="bill-reminders.php"><i data-feather="bell"></i> Bill Reminders</a></p>
+        <p><a href="billReminders.php"><i data-feather="bell"></i> Bill Reminders</a></p>
+        <p><a href="savingsGoals.php"><i data-feather="dollar-sign"></i> Savings Goals</a></p>
         <p><a href="reports-graphs.php"><i data-feather="bar-chart-2"></i> Reports</a></p>
         <p><a href="../index.html"><i data-feather="log-out"></i> Log Out</a></p>
     </div>
@@ -108,6 +147,20 @@
             </div>
 
             <div id="addExpense">
+                <?php if (!empty($errors)): ?>
+                    <div class="error-messages">
+                        <?php foreach ($errors as $error): ?>
+                            <p class="error"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($success): ?>
+                    <div class="success-message">
+                        <p>Expense added successfully!</p>
+                    </div>
+                <?php endif; ?>
+
                 <form id="expenseForm" action="../controller/expenseDB.php" method="POST">
                     <input type="number" id="expense" name="expenseAmount" placeholder="Amount" step="0.01" required />
                     <select id="category" name="category" required>
