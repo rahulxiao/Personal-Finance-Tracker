@@ -1,6 +1,6 @@
 <?php
     session_start();
-    if(isset($_SESSION['user'])){
+    if(isset($_SESSION['status'])){
 ?>
 
 <!DOCTYPE html>
@@ -9,7 +9,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Expense Tracker</title>
-    <link rel="stylesheet" href="js/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/expense.css" />
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             
@@ -73,64 +77,119 @@
 <body>
     <div class="sidebar">
         <div class="title">
-            <p>MoneyFin</p>
+            <p>FinanceFlow</p>
         </div>
-        <p><a href="Profile management.html">Profile Management</a></p> 
-        <p><a href="Income.html">Income</a></p>
-        <p><a href="Expense.html">Expense</a></p>
-        <p><a href="Debts.html">Debts</a></p>
-    </div>
-    <div id="date">
-        <p>14 April 2025</p>
-    </div>
-
-    <div id="expenseInfo">
-        <p id="totalExpense">Total Expense: $5000</p>
+        <p><a href="dashboard.php"><i data-feather="home"></i> Dashboard</a></p>
+        <p><a href="features.php"><i data-feather="grid"></i> Features</a></p>
+        <p><a href="income.php"><i data-feather="trending-up"></i> Income</a></p>
+        <p><a href="expense.php" class="active"><i data-feather="trending-down"></i> Expense</a></p>
+        <p><a href="Debts.php"><i data-feather="credit-card"></i> Debt Tracking</a></p>
+        <p><a href="budget-goals.php"><i data-feather="target"></i> Budget Goals</a></p>
+        <p><a href="bill-reminders.php"><i data-feather="bell"></i> Bill Reminders</a></p>
+        <p><a href="reports-graphs.php"><i data-feather="bar-chart-2"></i> Reports</a></p>
+        <p><a href="../index.html"><i data-feather="log-out"></i> Log Out</a></p>
     </div>
 
-    <div id="addExpense">
-        <form id="expenseForm">
-            <label for="expense">Add Expense:</label>
-            <input type="text" id="expense" name="expense" required />
-            <label for="source">Source:</label>
-            <input type="text" id="source" name="source" required />
-            <input type="submit" value="Add" />
-        </form>
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Expense Management</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="date-display" id="current-date"></div>
+                <div id="grandTotalExpense" style="font-size: 1.2rem; font-weight: 600; color: var(--error-color); margin-left: auto;">Total Expense: $0.00</div>
+            </div>
+        </header>
+
+        <!-- Add Expense Form -->
+        <div class="expense-container">
+            <div class="header">
+                <div id="expenseInfo">
+                    <p>Add New Expense</p>
+                </div>
+            </div>
+
+            <div id="addExpense">
+                <form id="expenseForm" action="../controller/expenseDB.php" method="POST">
+                    <input type="number" id="expense" name="expenseAmount" placeholder="Amount" step="0.01" required />
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <!-- Categories will be populated by JavaScript -->
+                    </select>
+                    <input type="text" id="description" name="description" placeholder="Description" required />
+                    <input type="date" id="expenseDate" name="expenseDate" required />
+                    <input type="submit" value="Add Expense" />
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Expenses Table -->
+        <div class="expense-container">
+            <div class="header">
+                <div id="tableInfo">
+                    <p>Recent Expenses</p>
+                </div>
+            </div>
+            <div id="Table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTableBody">
+                        <!-- Expense entries will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Category Manager -->
+        <div class="expense-container">
+            <div class="header">
+                <div id="categoryInfo">
+                    <p>Category Manager</p>
+                </div>
+            </div>
+            <div class="category-list">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+            <!-- Add Category Button -->
+            <div class="add-category-section">
+                <button id="addCategoryBtn" class="add-category-btn">
+                    <i data-feather="plus"></i> Add New Category
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Category Modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add New Category</h2>
+            <form id="addCategoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Category Name:</label>
+                    <input type="text" id="categoryName" name="categoryName" required />
+                </div>
+                <div class="form-group">
+                    <label for="categoryLimit">Monthly Limit ($):</label>
+                    <input type="number" id="categoryLimit" name="categoryLimit" step="0.01" required />
+                </div>
+                <button type="submit" class="submit-btn">Add Category</button>
+            </form>
+        </div>
     </div>
 
-    <div id="Table">
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Source</th>
-                </tr>
-            </thead>
-            <tbody id="expenseTableBody">
-                <tr>
-                    <td>$500</td>
-                    <td>14 April 2025</td>
-                    <td>Grocery</td>
-                </tr>
-                <tr>
-                    <td>$200</td>
-                    <td>10 April 2025</td>
-                    <td>Bills</td>
-                </tr>
-                <tr>
-                    <td>$100</td>
-                    <td>5 April 2025</td>
-                    <td>Gift</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../assets/js/expense.js"></script>
 </body>
 </html>
 <?php
     }else{
         header('location: login.html');
     }
-
 ?>

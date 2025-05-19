@@ -12,23 +12,25 @@ document.addEventListener('DOMContentLoaded', function() {
         currentDateElement.textContent = now.toLocaleDateString("en-US", options);
     }
 
+    // Global variables for tracking totals
+    window.totalIncome = 0;
+    window.recurringTotalIncome = 0;
+    window.sideHustleTotalIncome = 0;
+
+    function updateGrandTotalIncome() {
+        const grandTotal = window.totalIncome + window.recurringTotalIncome + window.sideHustleTotalIncome;
+        const grandTotalElem = document.getElementById('grandTotalIncome');
+        if (grandTotalElem) {
+            grandTotalElem.textContent = `Total Income: $${grandTotal.toFixed(2)}`;
+        }
+    }
+
     // Income form handling
     const form = document.getElementById('incomeForm');
     const incomeInput = document.getElementById('income');
     const sourceInput = document.getElementById('source');
     const totalIncomeElem = document.getElementById('totalIncome');
     const incomeTableBody = document.getElementById('incomeTableBody');
-    let totalIncome = 0;
-    let recurringTotalIncome = 0;
-    let sideHustleTotalIncome = 0;
-
-    function updateGrandTotalIncome() {
-        const grandTotal = totalIncome + recurringTotalIncome + sideHustleTotalIncome;
-        const grandTotalElem = document.getElementById('grandTotalIncome');
-        if (grandTotalElem) {
-            grandTotalElem.textContent = `Total Income: $${grandTotal.toFixed(2)}`;
-        }
-    }
 
     function addIncome(event) {
         event.preventDefault();
@@ -49,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        totalIncome += incomeVal;
-        totalIncomeElem.textContent = `Total Paycheck: $${totalIncome.toFixed(2)}`;
+        window.totalIncome += incomeVal;
+        totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
 
         const newRow = document.createElement('tr');
         const today = new Date();
@@ -65,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>$${incomeVal.toFixed(2)}</td>
             <td>${formattedDate}</td>
             <td>
-                <button class="edit-btn" onclick="editIncome(this)">Edit</button>
                 <button class="delete-btn" onclick="deleteIncome(this)">Delete</button>
             </td>
         `;
@@ -82,6 +83,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', addIncome);
     }
+
+    // Make deleteIncome function available globally
+    window.deleteIncome = function(button) {
+        const row = button.closest('tr');
+        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
+        
+        // Update total income
+        window.totalIncome -= amount;
+        totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
+        
+        // Remove the row
+        row.remove();
+
+        // Update grand total
+        updateGrandTotalIncome();
+    };
 
     // Recurring Income form handling
     const recurringForm = document.getElementById('recurringIncomeForm');
@@ -115,9 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        recurringTotalIncome += amountVal;
+        window.recurringTotalIncome += amountVal;
         if (recurringTotalIncomeElem) {
-            recurringTotalIncomeElem.textContent = `Recurring Income: $${recurringTotalIncome.toFixed(2)}`;
+            recurringTotalIncomeElem.textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
         }
 
         // Format date to match Paycheck section
@@ -132,7 +149,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>${sourceVal}</td>
             <td>$${amountVal.toFixed(2)}</td>
             <td>${formattedDate}</td>
-            <td></td>
+            <td>
+                <button class="delete-btn" onclick="deleteRecurringIncome(this)">Delete</button>
+            </td>
         `;
         recurringIncomeTableBody.appendChild(newRow);
 
@@ -180,9 +199,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        sideHustleTotalIncome += amountVal;
+        window.sideHustleTotalIncome += amountVal;
         if (totalElem) {
-            totalElem.textContent = `Side Hustle Income: $${sideHustleTotalIncome.toFixed(2)}`;
+            totalElem.textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
         }
 
         // Format date to match Paycheck section
@@ -197,7 +216,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>${sourceVal}</td>
             <td>$${amountVal.toFixed(2)}</td>
             <td>${formattedDate}</td>
-            <td></td>
+            <td>
+                <button class="delete-btn" onclick="deleteSideHustleIncome(this)">Delete</button>
+            </td>
         `;
         tableBody.appendChild(newRow);
 
@@ -269,10 +290,42 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!forecastChart) return;
         // Update chart with new data
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        const projectedData = months.map(() => totalIncome);
+        const projectedData = months.map(() => window.totalIncome);
         forecastChart.data.datasets[0].data = projectedData;
         forecastChart.update();
     }
+
+    // Make delete functions available globally
+    window.deleteRecurringIncome = function(button) {
+        const row = button.closest('tr');
+        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
+        
+        // Update recurring total income
+        window.recurringTotalIncome -= amount;
+        recurringTotalIncomeElem.textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
+        
+        // Remove the row
+        row.remove();
+
+        // Update grand total
+        updateGrandTotalIncome();
+    };
+
+    window.deleteSideHustleIncome = function(button) {
+        const row = button.closest('tr');
+        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
+        
+        // Update side hustle total income
+        window.sideHustleTotalIncome -= amount;
+        const totalElem = document.getElementById('sideHustleTotalIncome');
+        totalElem.textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
+        
+        // Remove the row
+        row.remove();
+
+        // Update grand total
+        updateGrandTotalIncome();
+    };
 });
 
 // Edit and Delete functions
@@ -287,10 +340,16 @@ function editIncome(button) {
 function deleteIncome(button) {
     const row = button.closest('tr');
     const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
+    
     // Update total income
     const totalIncomeElem = document.getElementById('totalIncome');
     const currentTotal = parseFloat(totalIncomeElem.textContent.replace(/[^0-9.-]+/g, ''));
-    totalIncomeElem.textContent = `Total Income: $${(currentTotal - amount).toFixed(2)}`;
+    window.totalIncome = currentTotal - amount; // Update the global totalIncome variable
+    totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
+    
     // Remove the row
     row.remove();
+
+    // Update grand total
+    updateGrandTotalIncome();
 } 
