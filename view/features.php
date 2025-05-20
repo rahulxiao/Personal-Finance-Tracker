@@ -52,7 +52,7 @@
         <div class="features-grid">
           <div
             class="feature-card"
-            onclick="window.location.href='expense-categories.html'"
+            onclick="window.location.href='Expense.php'"
           >
             <div class="feature-icon">
               <i data-feather="tag"></i>
@@ -63,7 +63,7 @@
 
           <div
             class="feature-card"
-            onclick="window.location.href='income-recording.html'"
+            onclick="window.location.href='Income.php'"
           >
             <div class="feature-icon">
               <i data-feather="trending-up"></i>
@@ -85,7 +85,7 @@
 
           <div
             class="feature-card"
-            onclick="window.location.href='bill-reminders.php'"
+            onclick="window.location.href='billReminders.php'"
           >
             <div class="feature-icon">
               <i data-feather="bell"></i>
@@ -118,7 +118,7 @@
 
           <div
             class="feature-card"
-            onclick="window.location.href='debt-tracking.html'"
+            onclick="window.location.href='Debts.php'"
           >
             <div class="feature-icon">
               <i data-feather="trending-down"></i>
@@ -129,7 +129,7 @@
 
           <div
             class="feature-card"
-            onclick="window.location.href='savings-goals.html'"
+            onclick="window.location.href='savingsGoals.php'"
           >
             <div class="feature-icon">
               <i data-feather="dollar-sign"></i>
