@@ -30,7 +30,7 @@
         </div>
         <ul class="sidebar-menu">
           <li data-page="dashboard">
-            <a href="##########"><i data-feather="home"></i> Dashboard</a>
+            <a href="dashboard.php"><i data-feather="home"></i> Dashboard</a>
           </li>
           <li class="active" data-page="features">
             <a href="features.php"><i data-feather="grid"></i> Features</a>
