@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const registerButton = document.getElementById('register-button');
     
     loginButton.addEventListener('click', function () {
-        window.location.href = 'view/login.html';
+        window.location.href = 'view/login.php';
     }
     );
     registerButton.addEventListener('click', function () {
-        window.location.href = 'view/register.html';
+        window.location.href = 'view/register.php';
     }
     );
     }
