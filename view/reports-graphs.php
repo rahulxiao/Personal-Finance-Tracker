@@ -1,9 +1,10 @@
 <?php
-    session_start();
-    if(isset($_SESSION['status'])){
+session_start();
+if (isset($_SESSION['status'])) {
 ?>
-<!DOCTYPE html>
-<html lang="en">
+  <!DOCTYPE html>
+  <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,16 +13,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap"
-      rel="stylesheet"
-    />
+      rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script
       type="text/javascript"
-      src="https://www.gstatic.com/charts/loader.js"
-    ></script>
+      src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" href="../assets/css/feature.css" />
     <link rel="stylesheet" href="../assets/css/reports-graphs.css" />
   </head>
+
   <body>
     <div class="app-container">
       <nav class="sidebar" id="sidebar">
@@ -36,14 +36,10 @@
             <a href="########"><i data-feather="home"></i> Dashboard</a>
           </li>
           <li class="ac" data-page="features">
-            <a href="features.php"
-              ><i data-feather="grid"></i> Features</a
-            >
+            <a href="features.php"><i data-feather="grid"></i> Features</a>
           </li>
           <li class="active" data-page="features">
-            <a href="reports-graphs.php"
-              ><i data-feather="bar-chart-2"></i> Reports & Graphs</a
-            >
+            <a href="reports-graphs.php"><i data-feather="bar-chart-2"></i> Reports & Graphs</a>
           </li>
         </ul>
       </nav>
@@ -58,8 +54,7 @@
           <div class="page-actions">
             <button
               class="back-button"
-              onclick="window.location.href='../pages/features.html'"
-            >
+              onclick="window.location.href='features.php'">
               <i data-feather="arrow-left"></i> Back to Features
             </button>
           </div>
@@ -212,7 +207,7 @@
     <script src="../assets/js/features.js"></script>
     <script src="../assets/js/reports-graphs.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", function() {
         // Initialize Feather Icons
         feather.replace();
 
@@ -228,12 +223,13 @@
       });
     </script>
   </body>
-</html>
+
+  </html>
 
 
 <?php
-    }else{
-        header('location: login.html');
-    }
+} else {
+  header('location: login.html');
+}
 
 ?>

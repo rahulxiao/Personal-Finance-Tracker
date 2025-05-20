@@ -46,7 +46,7 @@
 
             <div class="feature-content">
                 <div class="page-actions">
-                    <button class="back-button" onclick="window.location.href='../pages/features.html'">
+                    <button class="back-button" onclick="window.location.href='features.php'">
                         <i data-feather="arrow-left"></i> Back to Features
                     </button>
                 </div>

@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <link rel="stylesheet" href="../assets/css/feature.css">
-    <link rel="stylesheet" href="../assent/css/export-data-eport.css">
+    <link rel="stylesheet" href="../assets/css/export-data.css">
 </head>
 <body>
     <div class="app-container">
@@ -26,13 +26,16 @@
             </div>
             <ul class="sidebar-menu">
                 <li data-page="dashboard">
-                    <a href="##########"><i data-feather="home"></i> Dashboard</a>
+                    <a href="#"><i data-feather="home"></i> Dashboard</a>
                 </li>
-                <li class="ac" data-page="features">
-                    <a href="features.html"><i data-feather="grid"></i> Features</a>
+                <li data-page="features">
+                    <a href="features.php"><i data-feather="grid"></i> Features</a>
                 </li>
                 <li class="active" data-page="export-data">
-                    <a href="export-data.html"><i data-feather="download"></i> Export Data</a>
+                    <a href="export-data.php"><i data-feather="download"></i> Export Data</a>
+                </li>
+                <li data-page="logout">
+                    <a href="../index.html"><i data-feather="log-out"></i> Log Out</a>
                 </li>
             </ul>
         </nav>
@@ -45,7 +48,7 @@
 
             <div class="feature-content">
                 <div class="page-actions">
-                    <button class="back-button" onclick="window.location.href='../pages/features.html'">
+                    <button class="back-button" onclick="window.location.href='features.php'">
                         <i data-feather="arrow-left"></i> Back to Features
                     </button>
                     <div class="export-nav-tabs">
@@ -198,7 +201,6 @@
                         <div class="format-comparison">
                             <div class="format-table">
                                 <div class="table-header">
-                                    <div class="</div>
                                     <div class="header-cell feature-column">Features</div>
                                     <div class="header-cell">CSV</div>
                                     <div class="header-cell">PDF</div>
@@ -253,10 +255,22 @@
                             <h3>Quick Export</h3>
                             <p>Choose a format and click to export all your recent transactions.</p>
                             <div class="quick-export-buttons">
-                                <button class="quick-export-btn" data-format="csv"><i data-feather="file-text"></i><span>CSV</span></button>
-                                <button class="quick-export-btn" data-format="pdf"><i data-feather="file"></i><span>PDF</span></button>
-                                <button class="quick-export-btn" data-format="qbo"><i data-feather="hash"></i><span>QBO</span></button>
-                                <button class="quick-export-btn" data-format="json"><i data-feather="code"></i><span>JSON</span></button>
+                                <button class="quick-export-btn csv" data-format="csv">
+                                    <i data-feather="file-text"></i>
+                                    <span>CSV</span>
+                                </button>
+                                <button class="quick-export-btn pdf" data-format="pdf">
+                                    <i data-feather="file"></i>
+                                    <span>PDF</span>
+                                </button>
+                                <button class="quick-export-btn qbo" data-format="qbo">
+                                    <i data-feather="file"></i>
+                                    <span>QBO</span>
+                                </button>
+                                <button class="quick-export-btn json" data-format="json">
+                                    <i data-feather="code"></i>
+                                    <span>JSON</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -267,104 +281,78 @@
                             <div class="feature-icon large">
                                 <i data-feather="archive"></i>
                             </div>
-                            <h2>Manage Your Exported Data</h2>
-                            <p>View your previous exports, download archived data, and manage your automatic export schedules.</p>
+                            <h2>Export History & Archives</h2>
+                            <p>Access and manage your previously exported data files.</p>
                         </div>
-                        <div class="archive-tabs">
-                            <button class="archive-tab active" data-archive-tab="exports">Previous Exports</button>
-                            <button class="archive-tab" data-archive-tab="schedules">Scheduled Exports</button>
-                            <button class="archive-tab" data-archive-tab="settings">Backup Settings</button>
-                        </div>
-                        <div class="archive-tab-content">
-                            <div class="archive-tab-pane active" id="exports-tab">
-                                <div class="section-header">
-                                    <h3>Previous Exports</h3>
-                                    <div class="export-search">
-                                        <input type="text" placeholder="Search exports...">
-                                        <button class="search-btn"><i data-feather="search"></i></button>
-                                    </div>
-                                </div>
-                                <div class="export-history">
-                                    <div class="export-history-item">
-                                        <div class="export-info">
-                                            <div class="export-type">
-                                                <i data-feather="file-text"></i>
-                                                <span class="format-badge">CSV</span>
-                                            </div>
-                                            <div class="export-details">
-                                                <h4>Transactions and Budget Goals</h4>
-                                                <div class="export-meta">
-                                                    <span class="export-date">Apr 28, 2025</span>
-                                                    <span class="export-size">142 KB</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="export-actions">
-                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
-                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="export-history-item">
-                                        <div class="export-info">
-                                            <div class="export-type">
-                                                <i data-feather="file"></i>
-                                                <span class="format-badge">PDF</span>
-                                            </div>
-                                            <div class="export-details">
-                                                <h4>Tax Information Summary</h4>
-                                                <div class="export-meta">
-                                                    <span class="export-date">Apr 15, 2025</span>
-                                                    <span class="export-size">3.2 MB</span>
-                                                    <span class="security-badge"><i data-feather="lock"></i> Encrypted</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="export-actions">
-                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
-                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="export-history-item">
-                                        <div class="export-info">
-                                            <div class="export-type">
-                                                <i data-feather="hash"></i>
-                                                <span class="format-badge">QBO</span>
-                                            </div>
-                                            <div class="export-details">
-                                                <h4>QuickBooks Export - March 2025</h4>
-                                                <div class="export-meta">
-                                                    <span class="export-date">Apr 2, 2025</span>
-                                                    <span class="export-size">256 KB</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="export-actions">
-                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
-                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
-                                        </div>
-                                    </div>
-                                    <div class="export-history-item">
-                                        <div class="export-info">
-                                            <div class="export-type">
-                                                <i data-feather="code"></i>
-                                                <span class="format-badge">JSON</span>
-                                            </div>
-                                            <div class="export-details">
-                                                <h4>Complete Financial Data</h4>
-                                                <div class="export-meta">
-                                                    <span class="export-date">Mar 15, 2025</span>
-                                                    <span class="export-size">1.7 MB</span>
-                                                    <span class="security-badge"><i data-feather="lock"></i> Encrypted</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="export-actions">
-                                            <button class="action-btn" title="Download"><i data-feather="download"></i></button>
-                                            <button class="action-btn" title="Delete"><i data-feather="trash-2"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="archive-filter">
+                            <div class="filter-options">
+                                <select id="archive-filter-type">
+                                    <option value="all">All Export Types</option>
+                                    <option value="transactions">Transactions</option>
+                                    <option value="budgets">Budgets</option>
+                                    <option value="taxes">Taxes</option>
+                                </select>
+                                <select id="archive-filter-format">
+                                    <option value="all">All Formats</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="qbo">QBO</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                                <select id="archive-filter-date">
+                                    <option value="all">All Dates</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                                <button class="filter-btn">
+                                    <i data-feather="filter"></i> Apply Filters
+                                </button>
                             </div>
+                            <div class="archive-search">
+                                <input type="text" placeholder="Search archives..." id="archive-search">
+                                <button class="search-btn">
+                                    <i data-feather="search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="archive-empty-state">
+                            <div class="empty-state-icon">
+                                <i data-feather="archive"></i>
+                            </div>
+                            <h3>No Export History</h3>
+                            <p>You haven't exported any data yet. Use the Export Wizard to create your first export.</p>
+                            <button class="goto-export-btn" onclick="switchTab('wizard')">
+                                <i data-feather="arrow-right"></i> Go to Export Wizard
+                            </button>
+                        </div>
+                        <div class="archive-table" style="display: none;">
+                            <div class="table-header">
+                                <div class="header-cell">Filename</div>
+                                <div class="header-cell">Date</div>
+                                <div class="header-cell">Type</div>
+                                <div class="header-cell">Format</div>
+                                <div class="header-cell">Size</div>
+                                <div class="header-cell">Actions</div>
+                            </div>
+                            <div class="archive-rows">
+                                <!-- Archive rows will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="archive-actions">
+                            <button class="archive-action-btn delete-all-btn">
+                                <i data-feather="trash-2"></i> Delete All Exports
+                            </button>
+                            <button class="archive-action-btn download-all-btn">
+                                <i data-feather="download"></i> Download All as ZIP
+                            </button>
+                        </div>
+                        <div class="storage-info">
+                            <h3>Export Storage</h3>
+                            <div class="storage-meter">
+                                <div class="storage-used" style="width: 5%;"></div>
+                            </div>
+                            <p class="storage-details">Using <span class="storage-amount">5 MB</span> of <span class="storage-limit">100 MB</span></p>
                         </div>
                     </div>
                 </div>
@@ -373,27 +361,235 @@
     </div>
 
     <div id="notification-container" class="notification-container"></div>
+    
+    
     <script src="../assets/js/features.js"></script>
     <script src="../assets/js/export-data.js"></script>
     <script>
-        feather.replace();
-        document.getElementById('file-format').addEventListener('change', function() {
-            const format = this.value;
-            const extensionMap = {
-                'csv': '.csv',
-                'pdf': '.pdf',
-                'qbo': '.qbo',
-                'json': '.json'
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Feather Icons
+            feather.replace();
+            
+            // Set current date
+            const currentDateElement = document.getElementById('current-date');
+            const now = new Date();
+            currentDateElement.textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Tab navigation
+            const tabButtons = document.querySelectorAll('.export-nav-tab');
+            const tabPanes = document.querySelectorAll('.export-tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Show corresponding tab pane
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Switch tab function for buttons
+            window.switchTab = function(tabId) {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                
+                const button = document.querySelector(`.export-nav-tab[data-tab="${tabId}"]`);
+                button.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
             };
-            document.getElementById('file-extension').value = extensionMap[format] || '';
+            
+            // File format change handler
+            const fileFormatSelect = document.getElementById('file-format');
+            const fileExtensionInput = document.getElementById('file-extension');
+            
+            fileFormatSelect.addEventListener('change', function() {
+                const format = this.value;
+                switch(format) {
+                    case 'csv':
+                        fileExtensionInput.value = '.csv';
+                        break;
+                    case 'pdf':
+                        fileExtensionInput.value = '.pdf';
+                        break;
+                    case 'qbo':
+                        fileExtensionInput.value = '.qbo';
+                        break;
+                    case 'json':
+                        fileExtensionInput.value = '.json';
+                        break;
+                    default:
+                        fileExtensionInput.value = '';
+                }
+            });
+            
+            // Date range change handler
+            const dateRangeSelect = document.getElementById('date-range');
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            
+            dateRangeSelect.addEventListener('change', function() {
+                const range = this.value;
+                const today = new Date();
+                let startDate = new Date();
+                
+                if (range === 'last-30') {
+                    startDate.setDate(today.getDate() - 30);
+                    startDateInput.value = formatDate(startDate);
+                    endDateInput.value = formatDate(today);
+                    startDateInput.disabled = true;
+                    endDateInput.disabled = true;
+                } else if (range === 'last-90') {
+                    startDate.setDate(today.getDate() - 90);
+                    startDateInput.value = formatDate(startDate);
+                    endDateInput.value = formatDate(today);
+                    startDateInput.disabled = true;
+                    endDateInput.disabled = true;
+                } else if (range === 'custom') {
+                    startDateInput.disabled = false;
+                    endDateInput.disabled = false;
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                }
+            });
+            
+            // Helper function to format date as YYYY-MM-DD
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            // Form submission handler
+            const exportForm = document.getElementById('export-wizard-form');
+            exportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show notification to user
+                const notification = document.createElement('div');
+                notification.className = 'notification success';
+                notification.innerHTML = `
+                    <i data-feather="check-circle"></i>
+                    <div class="notification-content">
+                        <h4>Export Started</h4>
+                        <p>Your data export is being processed. This may take a few moments.</p>
+                    </div>
+                    <button class="notification-close"><i data-feather="x"></i></button>
+                `;
+                
+                const notificationContainer = document.getElementById('notification-container');
+                notificationContainer.appendChild(notification);
+                feather.replace();
+                
+                // Auto-remove notification after 5 seconds
+                setTimeout(() => {
+                    notification.classList.add('removing');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 5000);
+                
+                // Close button functionality
+                const closeButton = notification.querySelector('.notification-close');
+                closeButton.addEventListener('click', () => {
+                    notification.classList.add('removing');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                });
+                
+                // Simulate successful export after 2 seconds
+                setTimeout(() => {
+                    const successNotification = document.createElement('div');
+                    successNotification.className = 'notification success';
+                    successNotification.innerHTML = `
+                        <i data-feather="check-circle"></i>
+                        <div class="notification-content">
+                            <h4>Export Complete</h4>
+                            <p>Your data has been exported successfully!</p>
+                        </div>
+                        <button class="notification-close"><i data-feather="x"></i></button>
+                    `;
+                    
+                    notificationContainer.appendChild(successNotification);
+                    feather.replace();
+                    
+                    // Auto-remove notification after 5 seconds
+                    setTimeout(() => {
+                        successNotification.classList.add('removing');
+                        setTimeout(() => {
+                            successNotification.remove();
+                        }, 300);
+                    }, 5000);
+                    
+                    // Close button functionality
+                    const closeSuccessButton = successNotification.querySelector('.notification-close');
+                    closeSuccessButton.addEventListener('click', () => {
+                        successNotification.classList.add('removing');
+                        setTimeout(() => {
+                            successNotification.remove();
+                        }, 300);
+                    });
+                }, 2000);
+            });
+            
+            // Quick export buttons
+            const quickExportButtons = document.querySelectorAll('.quick-export-btn');
+            quickExportButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const format = this.className.split(' ')[1]; // Get format from class
+                    
+                    // Show notification to user
+                    const notification = document.createElement('div');
+                    notification.className = 'notification success';
+                    notification.innerHTML = `
+                        <i data-feather="check-circle"></i>
+                        <div class="notification-content">
+                            <h4>Quick Export Started</h4>
+                            <p>Your ${format.toUpperCase()} export is being processed.</p>
+                        </div>
+                        <button class="notification-close"><i data-feather="x"></i></button>
+                    `;
+                    
+                    const notificationContainer = document.getElementById('notification-container');
+                    notificationContainer.appendChild(notification);
+                    feather.replace();
+                    
+                    // Auto-remove notification after 5 seconds
+                    setTimeout(() => {
+                        notification.classList.add('removing');
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 300);
+                    }, 5000);
+                    
+                    // Close button functionality
+                    const closeButton = notification.querySelector('.notification-close');
+                    closeButton.addEventListener('click', () => {
+                        notification.classList.add('removing');
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 300);
+                    });
+                });
+            });
         });
     </script>
 </body>
 </html>
-
 <?php
     }else{
         header('location: login.html');
     }
-
 ?>

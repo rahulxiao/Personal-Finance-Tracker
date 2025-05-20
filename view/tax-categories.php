@@ -16,8 +16,8 @@
             rel="stylesheet"
         />
         <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-        <link rel="stylesheet" href="../css/feature.css" />
-        <link rel="stylesheet" href="../css/tax-categories.css" />
+        <link rel="stylesheet" href="../assets/css/feature.css" />
+        <link rel="stylesheet" href="../assets/css/tax-categories.css" />
     </head>
     <body>
         <div class="app-container">
@@ -38,10 +38,10 @@
                         >
                     </li>
                     <li data-page="features">
-                        <a href="../pages/features.html"><i data-feather="grid"></i> Features</a>
+                        <a href="features.php"><i data-feather="grid"></i> Features</a>
                     </li>
                     <li class="active" data-page="features">
-                        <a href="../pages/tax-categories.html"
+                        <a href="tax-categories.php"
                             > <i data-feather="file-text"></i>Tax </a
                         >
                     </li>
@@ -56,7 +56,7 @@
 
                 <div class="feature-content">
                     <div class="page-actions">
-                        <button class="back-button" onclick="window.location.href='../pages/features.html'">
+                        <button class="back-button" onclick="window.location.href='features.php'">
                             <i data-feather="arrow-left"></i> Back to Features
                         </button>
                         
@@ -496,8 +496,8 @@
         </div>
 
         <div id="notification-container" class="notification-container"></div>
-        <script src="../js/features.js"></script>
-        <script src="../js/tax-categories.js"></script>
+        <script src="../assets/js/features.js"></script>
+        <script src="../assets/js/tax-categories.js"></script>
     </body>
 </html>
 
