@@ -164,11 +164,11 @@
                 </div>
                 <div class="form-group">
                     <label for="targetAmount">Target Amount</label>
-                    <input type="number" id="targetAmount" name="targetAmount" min="0" step="0.01" required>
+                    <input type="number" id="targetAmount" name="targetAmount" min= "0.01" step="0.01" required>
                 </div>
                 <div class="form-group">
                     <label for="currentAmount">Current Amount</label>
-                    <input type="number" id="currentAmount" name="currentAmount" min="0" step="0.01" required>
+                    <input type="number" id="currentAmount" name="currentAmount" min= "0.01" step="0.01" required>
                 </div>
                 <div class="form-group">
                     <label for="targetDate">Target Date</label>

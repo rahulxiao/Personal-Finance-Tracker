@@ -98,9 +98,9 @@
 
                 <form id="debtForm">
                     <input type="text" id="debtSource" name="debtSource" placeholder="Debt Source" required />
-                    <input type="number" id="loanAmount" name="loanAmount" placeholder="Loan Amount" min="0" step="0.01" required />
+                    <input type="number" id="loanAmount" name="loanAmount" placeholder="Loan Amount" min="0.01" step="0.01" required />
                     <input type="number" id="interestRate" name="interestRate" placeholder="Interest Rate (%)" min="0" step="0.01" required />
-                    <input type="number" id="monthlyPayment" name="monthlyPayment" placeholder="Monthly Payment" min="0" step="0.01" required />
+                    <input type="number" id="monthlyPayment" name="monthlyPayment" placeholder="Monthly Payment" min="0.01" step="0.01" required />
                     <input type="submit" value="Add Debt" />
                 </form>
             </div>

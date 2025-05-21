@@ -5,7 +5,120 @@ document.addEventListener('DOMContentLoaded', function() {
     // Global variables
     let goals = [];
 
-    // Load goals from localStorage
+    // create error message element
+    function createErrorMessage(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.color = 'var(--error-color)';
+        errorDiv.style.fontSize = '0.8rem';
+        errorDiv.style.marginTop = '4px';
+        errorDiv.textContent = message;
+        return errorDiv;
+    }
+
+    //show error message
+    function showError(inputElement, message) {
+        // Remove any existing error message
+        const existingError = inputElement.parentElement.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        //new error message
+        const errorDiv = createErrorMessage(message);
+        inputElement.parentElement.appendChild(errorDiv);
+        
+        //error styling
+        inputElement.style.borderColor = 'var(--error-color)';
+    }
+
+    // clear error message
+    function clearError(inputElement) {
+        const errorDiv = inputElement.parentElement.querySelector('.error-message');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        inputElement.style.borderColor = 'var(--border-color)';
+    }
+
+    // minimum date to today
+    const targetDateInput = document.getElementById('targetDate');
+    if (targetDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        targetDateInput.min = today;
+
+        //target date
+        targetDateInput.addEventListener('input', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to start of day
+
+            if (selectedDate < today) {
+                showError(this, 'Target date cannot be in the past');
+            } else {
+                clearError(this);
+            }
+        });
+    }
+
+    // target amount and current amount error handling for invalid amounts
+    const targetAmountInput = document.getElementById('targetAmount');
+    const currentAmountInput = document.getElementById('currentAmount');
+    const monthlyContributionInput = document.getElementById('monthlyContribution');
+
+    if (targetAmountInput && currentAmountInput) {
+        targetAmountInput.addEventListener('input', function() {
+            const targetAmount = parseFloat(this.value) || 0;
+            const currentAmount = parseFloat(currentAmountInput.value) || 0;
+            const monthlyContribution = parseFloat(monthlyContributionInput.value) || 0;
+
+            if (currentAmount > targetAmount) {
+                showError(currentAmountInput, 'Current amount cannot be higher than target amount');
+            } else {
+                clearError(currentAmountInput);
+            }
+
+            if (monthlyContribution > targetAmount) {
+                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than target amount');
+            } else {
+                clearError(monthlyContributionInput);
+            }
+        });
+
+        currentAmountInput.addEventListener('input', function() {
+            const targetAmount = parseFloat(targetAmountInput.value) || 0;
+            const currentAmount = parseFloat(this.value) || 0;
+            const monthlyContribution = parseFloat(monthlyContributionInput.value) || 0;
+
+            if (currentAmount > targetAmount) {
+                showError(this, 'Current amount cannot be higher than target amount');
+            } else {
+                clearError(this);
+            }
+
+            if (monthlyContribution > currentAmount) {
+                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than current amount');
+            } else {
+                clearError(monthlyContributionInput);
+            }
+        });
+
+        monthlyContributionInput.addEventListener('input', function() {
+            const targetAmount = parseFloat(targetAmountInput.value) || 0;
+            const currentAmount = parseFloat(currentAmountInput.value) || 0;
+            const monthlyContribution = parseFloat(this.value) || 0;
+
+            if (monthlyContribution > targetAmount) {
+                showError(this, 'Monthly contribution cannot be higher than target amount');
+            } else if (monthlyContribution > currentAmount) {
+                showError(this, 'Monthly contribution cannot be higher than current amount');
+            } else {
+                clearError(this);
+            }
+        });
+    }
+
+    // loading goals from localStorage
     function loadGoals() {
         const savedGoals = localStorage.getItem('savingsGoals');
         if (savedGoals) {
@@ -16,12 +129,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Save goals to localStorage
+    // saving goals to localStorage
     function saveGoals() {
         localStorage.setItem('savingsGoals', JSON.stringify(goals));
     }
 
-    // Update goals grid
+    // updating goals grid
     function updateGoalsGrid() {
         const goalsGrid = document.getElementById('goalsGrid');
         if (!goalsGrid) return;
@@ -71,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.feather) feather.replace();
     }
 
-    // Update stats
+    // updating stats
     function updateStats() {
         const totalGoals = document.getElementById('totalGoals');
         const totalSaved = document.getElementById('totalSaved');
@@ -92,14 +205,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Update milestones
+    // updating milestones
     function updateMilestones() {
         const milestonesContainer = document.getElementById('milestonesContainer');
         if (!milestonesContainer) return;
 
         milestonesContainer.innerHTML = '';
 
-        // Sort goals by progress
+        // sorting goals by progress
         const sortedGoals = [...goals].sort((a, b) => {
             const progressA = a.currentAmount / a.targetAmount;
             const progressB = b.currentAmount / b.targetAmount;
@@ -127,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.feather) feather.replace();
     }
 
-    // Calculate months remaining
+    // calculating months remaining
     function calculateMonthsRemaining(targetDate) {
         const today = new Date();
         const target = new Date(targetDate);
@@ -136,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.max(0, months);
     }
 
-    // Show add goal modal
+    // showing add goal modal
     window.showAddGoalModal = function() {
         const modal = document.getElementById('addGoalModal');
         if (modal) {
@@ -144,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Hide add goal modal
+    // Hide add goal modal 
     window.hideAddGoalModal = function() {
         const modal = document.getElementById('addGoalModal');
         if (modal) {
@@ -152,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Show celebration modal
+    // showing celebration modal
     function showCelebrationModal(goal) {
         const modal = document.getElementById('celebrationModal');
         const message = document.getElementById('celebrationMessage');
@@ -162,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Hide celebration modal
+    // hiding celebration modal
     window.hideCelebrationModal = function() {
         const modal = document.getElementById('celebrationModal');
         if (modal) {
@@ -170,20 +283,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Add new goal
+    // adding new goal
     const addGoalForm = document.getElementById('addGoalForm');
     if (addGoalForm) {
         addGoalForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
+            const targetAmount = parseFloat(document.getElementById('targetAmount').value);
+            const currentAmount = parseFloat(document.getElementById('currentAmount').value);
+            const monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value);
+            const targetDate = new Date(document.getElementById('targetDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time
+
+            if (targetDate < today) {
+                showError(targetDateInput, 'Target date cannot be in the past');
+                return;
+            }
+
+            // Validate current amount against target amount
+            if (currentAmount > targetAmount) {
+                showError(currentAmountInput, 'Current amount cannot be higher than target amount to set a goal');
+                return;
+            }
+
+            // Validate monthly contribution
+            if (monthlyContribution > targetAmount) {
+                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than target amount');
+                return;
+            }
+            if (monthlyContribution > currentAmount) {
+                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than current amount');
+                return;
+            }
+
             const newGoal = {
                 id: Date.now(),
                 name: document.getElementById('goalName').value,
-                targetAmount: parseFloat(document.getElementById('targetAmount').value),
-                currentAmount: parseFloat(document.getElementById('currentAmount').value),
+                targetAmount: targetAmount,
+                currentAmount: currentAmount,
                 targetDate: document.getElementById('targetDate').value,
                 category: document.getElementById('category').value,
-                monthlyContribution: parseFloat(document.getElementById('monthlyContribution').value)
+                monthlyContribution: monthlyContribution
             };
 
             goals.push(newGoal);
@@ -203,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Delete goal
+    // deleting goal
     window.deleteGoal = function(goalId) {
         if (confirm('Are you sure you want to delete this goal?')) {
             goals = goals.filter(g => g.id !== goalId);
@@ -214,6 +355,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Initialize everything
+    // initializing everything
     loadGoals();
 });

@@ -162,7 +162,7 @@
                 <?php endif; ?>
 
                 <form id="expenseForm" action="../controller/expenseDB.php" method="POST">
-                    <input type="number" id="expense" name="expenseAmount" placeholder="Amount" step="0.01" required />
+                    <input type="number" id="expense" name="expenseAmount" min= "0.01" placeholder="Amount" step="0.01" required />
                     <select id="category" name="category" required>
                         <option value="">Select Category</option>
                         <!-- Categories will be populated by JavaScript -->

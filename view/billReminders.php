@@ -117,7 +117,7 @@
 
                 <form id="billForm" action="../controller/billDB.php" method="POST">
                     <input type="text" id="billName" name="billName" placeholder="Bill Name" required />
-                    <input type="number" id="billAmount" name="billAmount" placeholder="Amount" step="0.01" required />
+                    <input type="number" id="billAmount" name="billAmount" min= "0.01" placeholder="Amount" step="0.01" required />
                     <input type="date" id="dueDate" name="dueDate" required />
                     <select id="billCategory" name="billCategory" required>
                         <option value="">Select Category</option>

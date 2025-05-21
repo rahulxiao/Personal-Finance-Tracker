@@ -13,9 +13,10 @@
 
             if (empty($_POST['incomeAmount'])) {
                 $errors[] = "Income amount is required";
-            } elseif (!is_numeric($_POST['incomeAmount']) || $_POST['incomeAmount'] <= 0) {
+            } if (!isset($_POST['incomeAmount']) || !is_numeric($_POST['incomeAmount']) || floatval($_POST['incomeAmount']) <= 0) {
                 $errors[] = "Income amount must be a positive number";
-            }
+            }          
+
 
             if (empty($_POST['incomeDate'])) {
                 $errors[] = "Income date is required";
@@ -96,7 +97,7 @@
 
                 <form id="incomeForm" action="../controller/incomeDB.php" method="POST">
                     <input type="text" id="source" name="incomeSource" placeholder="Income Source" required />
-                    <input type="number" id="income" name="incomeAmount" placeholder="Amount" step="0.01" required />
+                    <input type="number" id="income" name="incomeAmount" min= "0.01" placeholder="Amount" step="0.01" required />
                     <input type="date" id="incomeDate" name="incomeDate" required />
                     <input type="submit" value="Add Income" />
                 </form>
@@ -185,7 +186,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../assets/js/income.js"></script>
+    <!-- <script src="../assets/js/income.js"></script> -->
 </body>
 </html>
 <?php
