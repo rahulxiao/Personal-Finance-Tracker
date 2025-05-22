@@ -51,10 +51,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (progressBar) {
                 const percentage = (window.categorySpending[category] / window.categoryLimits[category]) * 100;
                 progressBar.style.width = `${Math.min(percentage, 100)}%`;
+                
+                // Add or remove over-budget class based on spending
+                if (window.categorySpending[category] > window.categoryLimits[category]) {
+                    progressBar.classList.add('over-budget');
+                } else {
+                    progressBar.classList.remove('over-budget');
+                }
             }
             
             if (spentText) {
-                spentText.textContent = `Spent: $${window.categorySpending[category].toFixed(2)}`;
+                const isOverBudget = window.categorySpending[category] > window.categoryLimits[category];
+                spentText.textContent = `Spent: $${window.categorySpending[category].toFixed(2)}${isOverBudget ? ' (Over Budget)' : ''}`;
+                spentText.style.color = isOverBudget ? 'var(--error-color)' : 'var(--text-secondary)';
             }
         }
     }
@@ -261,10 +270,19 @@ function deleteExpense(button) {
         if (progressBar) {
             const percentage = (window.categorySpending[category] / window.categoryLimits[category]) * 100;
             progressBar.style.width = `${Math.min(percentage, 100)}%`;
+            
+            // Update over-budget state
+            if (window.categorySpending[category] > window.categoryLimits[category]) {
+                progressBar.classList.add('over-budget');
+            } else {
+                progressBar.classList.remove('over-budget');
+            }
         }
         
         if (spentText) {
-            spentText.textContent = `Spent: $${window.categorySpending[category].toFixed(2)}`;
+            const isOverBudget = window.categorySpending[category] > window.categoryLimits[category];
+            spentText.textContent = `Spent: $${window.categorySpending[category].toFixed(2)}${isOverBudget ? ' (Over Budget)' : ''}`;
+            spentText.style.color = isOverBudget ? 'var(--error-color)' : 'var(--text-secondary)';
         }
     }
     
