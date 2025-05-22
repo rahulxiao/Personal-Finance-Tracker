@@ -95,12 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 clearError(this);
             }
-
-            if (monthlyContribution > currentAmount) {
-                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than current amount');
-            } else {
-                clearError(monthlyContributionInput);
-            }
         });
 
         monthlyContributionInput.addEventListener('input', function() {
@@ -110,8 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (monthlyContribution > targetAmount) {
                 showError(this, 'Monthly contribution cannot be higher than target amount');
-            } else if (monthlyContribution > currentAmount) {
-                showError(this, 'Monthly contribution cannot be higher than current amount');
+            
             } else {
                 clearError(this);
             }
@@ -312,10 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(monthlyContributionInput, 'Monthly contribution cannot be higher than target amount');
                 return;
             }
-            if (monthlyContribution > currentAmount) {
-                showError(monthlyContributionInput, 'Monthly contribution cannot be higher than current amount');
-                return;
-            }
+            
 
             const newGoal = {
                 id: Date.now(),
