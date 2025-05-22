@@ -63,10 +63,16 @@ body {
     border-radius: 6px;
 }
 
-.sidebar a:hover,
+.sidebar a:hover {
+    color: var(--primary-color);
+    background-color: var(--card-hover);
+}
 .sidebar a.active {
     color: var(--primary-color);
     background-color: var(--card-hover);
+    font-weight: 600;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 6px;
 }
 
 .sidebar i {
