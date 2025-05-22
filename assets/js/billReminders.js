@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bill form handling
     const billForm = document.getElementById('billForm');
     if (billForm) {
+        // Set minimum date to today for the date input
+        const dueDateInput = document.getElementById('dueDate');
+        const today = new Date().toISOString().split('T')[0];
+        dueDateInput.min = today;
+
         billForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -112,6 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!dueDate) {
                 alert('Please select a due date.');
+                return;
+            }
+
+            // Validate that due date is not in the past
+            const selectedDate = new Date(dueDate);
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            if (selectedDate < currentDate) {
+                alert('Due date cannot be in the past.');
                 return;
             }
 
@@ -141,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Clear form
             billForm.reset();
+            // Reset minimum date after form reset
+            dueDateInput.min = today;
         });
     }
 
@@ -195,16 +211,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset time to start of day
-        const threeDaysFromNow = new Date(today);
-        threeDaysFromNow.setDate(today.getDate() + 3);
 
-        // Filter bills that are due within next 3 days and are pending
+        // Filter bills that are due in the future and are pending
         const upcomingBillsList = bills.filter(bill => {
             const dueDate = new Date(bill.dueDate);
             dueDate.setHours(0, 0, 0, 0); // Reset time to start of day
-            return dueDate >= today && 
-                   dueDate <= threeDaysFromNow && 
-                   bill.status === 'pending';
+            return dueDate >= today && bill.status === 'pending';
         });
 
         upcomingBills = upcomingBillsList.length;
@@ -216,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show alert only if there are upcoming bills
         if (upcomingBills > 0) {
-            showAlert(`You have ${upcomingBills} bill${upcomingBills > 1 ? 's' : ''} due in the next 3 days!`, 'warning');
+            showAlert(`You have ${upcomingBills} bill${upcomingBills > 1 ? 's' : ''} due!`, 'warning');
         }
     }
 
