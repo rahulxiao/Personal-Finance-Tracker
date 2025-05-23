@@ -1,283 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JustAdmin - Dashboard</title>
-    <link rel="stylesheet" href="../assets/css/admin.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinanceFlow - Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-</head>
-<body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <i data-feather="box"></i>
-                <h2>Justadmin</h2>
+    <link rel="stylesheet" href="../assets/css/feature.css" />
+    <link rel="stylesheet" href="../assets/css/admin.css" />
+    <style>
+      
+    </style>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h1>FinanceFlow</h1>
+          <button id="sidebar-toggle" class="sidebar-toggle mobile-only">
+            <i data-feather="menu"></i>
+          </button>
+        </div>
+        <ul class="sidebar-menu">
+          <li data-page="dashboard">
+            <a href="#########"><i data-feather="home"></i> Dashboard</a>
+          </li>
+          <li class="active" data-page="users">
+            <a href="#users"><i data-feather="users"></i> User Management</a>
+          </li>
+          <li data-page="content">
+            <a href="#content"><i data-feather="edit"></i> Content Moderation</a>
+          </li>
+          <li data-page="logout">
+            <a href="../controller/logout.php">
+              <i data-feather="log-out"></i> Log Out
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <main class="main-content">
+        <div class="page-header">
+          <h1 id="page-title">User Management</h1>
+          <div class="date-display" id="current-date"></div>
+        </div>
+
+        <!-- User Management Section -->
+        <section id="users-section" class="admin-section">
+          <div class="admin-toolbar">
+            <div class="search-box">
+              <i data-feather="search"></i>
+              <input type="text" placeholder="Search users..." id="user-search">
             </div>
-            
-            <div class="sidebar-section">
-                <h3>Menu</h3>
-                <ul class="sidebar-menu">
-                    <li class="active">
-                        <a href="#">
-                            <i data-feather="grid"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="admin-user.html">
-                            <i data-feather="users"></i>
-                            <span>Users</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i data-feather="file-text"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                </ul>
+            <div class="action-buttons">
+              <button class="btn btn-primary" id="add-user-btn">
+                <i data-feather="plus"></i> Add User
+              </button>
+              <button class="btn btn-secondary" id="bulk-actions-btn">
+                <i data-feather="layers"></i> Bulk Actions
+              </button>
             </div>
-            
-            <div class="sidebar-section">
-                <h3>Miscellaneous</h3>
-                <ul class="sidebar-menu">
-                    
-                    <li>
-                        <a href="#">
-                            <i data-feather="mail"></i>
-                            <span>Mailbox</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i data-feather="settings"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
+          </div>
+
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="role-filter">Role:</label>
+              <select id="role-filter" class="form-select">
+                <option value="all">All Roles</option>
+                <option value="admin">Administrator</option>
+                <option value="moderator">Moderator</option>
+                <option value="user">Regular User</option>
+              </select>
             </div>
-            
-            <div class="logout">
-                <a href="#">
-                    <i data-feather="log-out"></i>
-                    <span>Log out</span>
-                </a>
+            <div class="filter-group">
+              <label for="status-filter">Status:</label>
+              <select id="status-filter" class="form-select">
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="pending">Pending</option>
+              </select>
             </div>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Top Navigation -->
-            <nav class="top-nav">
-                <div class="page-title">
-                    <h1>Dashboard</h1>
-                </div>
-                
-                <div class="nav-actions">
-                    <button class="icon-btn">
-                        <i data-feather="search"></i>
-                    </button>
-                    <button class="icon-btn notification-btn">
-                        <i data-feather="bell"></i>
-                    </button>
-                    
-                    <div class="user-profile">
-                        <div class="profile-img">
-                            <img src="../assets/images/profile.jpg" alt="Tika Soekotika" onerror="this.src='../api/placeholder/40/40';this.onerror='';">
-                        </div>
-                        <div class="profile-info">
-                            <h4>Tika Soekotika</h4>
-                            <span>Admin</span>
-                        </div>
-                        <i data-feather="chevron-down"></i>
-                    </div>
-                </div>
-            </nav>
-            
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <!-- Welcome Section -->
-                <div class="welcome-section">
-                    <div>
-                        <h2>Hi, Tika</h2>
-                        <p>Welcome back to Justadmin Dashboard!</p>
-                    </div>
-                    <div class="welcome-actions">
-                        <button class="download-btn">
-                            <i data-feather="download"></i>
-                            Download
-                        </button>
-                        <button class="add-btn">
-                            <i data-feather="plus"></i>
-                            Add deadline
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total earning</h3>
-                            <h2>$22,800.50</h2>
-                        </div>
-                        <div class="stat-icon blue">
-                            <i data-feather="dollar-sign"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total spending</h3>
-                            <h2>$1,096.00</h2>
-                        </div>
-                        <div class="stat-icon purple">
-                            <i data-feather="shopping-cart"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Lead conversion</h3>
-                            <h2>78.93%</h2>
-                        </div>
-                        <div class="stat-icon cyan">
-                            <i data-feather="users"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Goal this month</h3>
-                            <h2>$32,200.00</h2>
-                        </div>
-                        <div class="stat-icon green">
-                            <i data-feather="target"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Charts and Tables Section -->
-                <div class="dashboard-grid">
-                    <!-- Sales Chart -->
-                    <div class="dashboard-card sales-chart">
-                        <div class="card-header">
-                            <h3>Overall sales</h3>
-                            <div class="date-filter">
-                                <span>Sept 07 - Sept 12</span>
-                                <i data-feather="calendar"></i>
-                            </div>
-                        </div>
-                        <h2 class="total-sales">$80,842.52</h2>
-                        <div class="chart-container" id="sales-chart">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Earnings Chart -->
-                    <div class="dashboard-card earnings-chart">
-                        <div class="card-header">
-                            <h3>Total earning</h3>
-                            <div class="date-filter">
-                                <span>Month</span>
-                                <i data-feather="chevron-down"></i>
-                            </div>
-                        </div>
-                        <div class="donut-chart" id="earnings-chart">
-                            <div class="donut-center">
-                                <h3>88%</h3>
-                                <p>Earnings</p>
-                            </div>
-                        </div>
-                        <p class="chart-note">88% more earnings than last month. Keep watching to find out your earnings.</p>
-                    </div>
-                    
-                    <!-- Invoice Table -->
-                    <div class="dashboard-card invoice-table">
-                        <div class="card-header">
-                            <h3>New invoice</h3>
-                            <button class="more-btn">
-                                <i data-feather="more-vertical"></i>
-                            </button>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Invoice ID</th>
-                                        <th>Invoice Name</th>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>INV-012-3456789</td>
-                                        <td>Mailchimp support</td>
-                                        <td>29-12-22</td>
-                                        <td>$220.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>INV-026-3456789</td>
-                                        <td>Cash withdrawal bank</td>
-                                        <td>24-12-22</td>
-                                        <td>$249.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Recent Activity -->
-                    <div class="dashboard-card recent-activity">
-                        <div class="card-header">
-                            <h3>Recent Activity</h3>
-                            <button class="more-btn">
-                                <i data-feather="more-vertical"></i>
-                            </button>
-                        </div>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-user">
-                                    <div class="user-avatar">
-                                        <img src="../api/placeholder/40/40" alt="Uchiha Itachi">
-                                    </div>
-                                    <div class="user-info">
-                                        <h4>Uchiha Itachi</h4>
-                                        <span>Just now</span>
-                                    </div>
-                                </div>
-                                <div class="activity-id">
-                                    <span>INV-054-2565789</span>
-                                </div>
-                            </div>
-                            
-                            <div class="activity-item">
-                                <div class="activity-user">
-                                    <div class="user-avatar">
-                                        <img src="../api/placeholder/40/40" alt="Haruno Sakura">
-                                    </div>
-                                    <div class="user-info">
-                                        <h4>Haruno Sakura</h4>
-                                        <span>15 minutes ago</span>
-                                    </div>
-                                </div>
-                                <div class="activity-id">
-                                    <span>INV-024-2456789</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <button class="btn btn-icon" id="export-users">
+              <i data-feather="download"></i>
+            </button>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-table" id="users-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="select-all-users"></th>
+                  <th data-sort="first_name">First Name <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="last_name">Last Name <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="email">Email <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="role">Role <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="username">Username <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="password">Password <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th data-sort="status">Status <i data-feather="chevron-down" class="sort-icon"></i></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Sample data rows -->
+                <tr>
+                  <td><input type="checkbox" class="user-checkbox"></td>
+                  <td>John</td>
+                  <td>Doe</td>
+                  <td>admin@financeflow.com</td>
+                  <td><span class="badge badge-admin">Administrator</span></td>
+                  <td>rahulxiao</td>
+                  <td>rahulxiao</td>
+                  <td><span class="badge badge-active">Active</span></td>
+                  <td class="action-cell">
+                    <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
+                    <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
+                  </td>
+                </tr>
+                <!-- More rows would be dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination-controls">
+            <div class="pagination-info">Showing 1-10 of 124 users</div>
+            <div class="pagination-buttons">
+              <button class="btn-icon" disabled><i data-feather="chevron-left"></i></button>
+              <button class="btn-page active">1</button>
+              <button class="btn-page">2</button>
+              <button class="btn-page">3</button>
+              <span>...</span>
+              <button class="btn-page">13</button>
+              <button class="btn-icon"><i data-feather="chevron-right"></i></button>
             </div>
-        </main>
+          </div>
+        </section>
+
+        <!-- Content Moderation Section (hidden by default) -->
+        <section id="content-section" class="admin-section" style="display:none;">
+          <!-- Similar structure as users section -->
+        </section>
+      </main>
     </div>
-    
+
+    <!-- Add User Modal -->
+    <div class="modal" id="add-user-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add New User</h3>
+          <button class="modal-close"><i data-feather="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-user-form">
+            <div class="form-group">
+              <label for="first-name">First Name</label>
+              <input type="text" id="first-name" class="form-control" placeholder="Enter first name" required>
+            </div>
+            <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input type="text" id="last-name" class="form-control" placeholder="Enter last name" required>
+            </div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" class="form-control" placeholder="Enter email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="cancel-add-user">Cancel</button>
+          <button class="btn btn-primary" type="submit" form="add-user-form">Save User</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
     <script src="../assets/js/admin.js"></script>
-</body>
+    <script>
+      feather.replace();
+
+      // Set current date
+      document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      // Modal toggle functionality
+      const addUserBtn = document.getElementById('add-user-btn');
+      const addUserModal = document.getElementById('add-user-modal');
+      const cancelAddUser = document.getElementById('cancel-add-user');
+      const modalClose = addUserModal.querySelector('.modal-close');
+
+      addUserBtn.addEventListener('click', () => {
+        addUserModal.classList.add('active');
+      });
+
+      cancelAddUser.addEventListener('click', () => {
+        addUserModal.classList.remove('active');
+      });
+
+      modalClose.addEventListener('click', () => {
+        addUserModal.classList.remove('active');
+      });
+
+      // Prevent form submission for demo purposes
+      document.getElementById('add-user-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('User form submitted (demo mode).');
+        addUserModal.classList.remove('active');
+      });
+    </script>
+  </body>
 </html>
