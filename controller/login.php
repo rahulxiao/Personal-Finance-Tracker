@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'validate_login.php';
-require_once '../model/db.php';
+require_once '../model/user_model.php'; // <-- use the login() function here
 
 if (isset($_POST['submit'])) {
     $username = trim($_POST['username']);
@@ -16,12 +16,9 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    $con = getConnection();
+    $user = ['username' => $username, 'password' => $password];
 
-    $sql = "SELECT * FROM login WHERE uname = '$username' AND pass = '$password'";
-    $result = mysqli_query($con, $sql);
-
-    if (mysqli_num_rows($result) === 1) {
+    if (login($user)) {
         $_SESSION['status'] = true;
         $_SESSION['username'] = $username;
         header('Location: ../view/features.php');
@@ -32,7 +29,6 @@ if (isset($_POST['submit'])) {
         header('Location: ../view/login.php');
     }
 
-    mysqli_close($con);
 } else {
     $_SESSION['login_errors']['login'] = "Invalid request! Please submit the form.";
     header('Location: ../view/login.php');

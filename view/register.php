@@ -121,7 +121,7 @@
                         <div class="error-message" id="terms-error"></div>
                     </div>
                     
-                    <button type="submit" class="btn-primary">Create Account</button>                 
+                    <button type="submit" name="submit" class="btn-primary">Create Account</button>                 
                     
                     <div class="alternative-register">
                         <span class="divider">Or register with</span>
