@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'validate_login.php';
+require_once '../model/db.php';
 
 if (isset($_POST['submit'])) {
     $username = trim($_POST['username']);
@@ -15,10 +16,7 @@ if (isset($_POST['submit'])) {
         exit();
     }
 
-    $con = mysqli_connect('127.0.0.1', 'root', '', 'finance');
-    if (!$con) {
-        die("Database connection failed: " . mysqli_connect_error());
-    }
+    $con = getConnection();
 
     $sql = "SELECT * FROM login WHERE uname = '$username' AND pass = '$password'";
     $result = mysqli_query($con, $sql);
