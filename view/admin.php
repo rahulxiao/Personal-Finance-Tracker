@@ -12,7 +12,6 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-  <link rel="stylesheet" href="../assets/css/feature.css" />
   <link rel="stylesheet" href="../assets/css/admin.css" />
   <style>
 
@@ -52,7 +51,6 @@
         <div class="date-display" id="current-date"></div>
       </div>
 
-      <!-- User Management Section -->
       <section id="users-section" class="admin-section">
         <div class="admin-toolbar">
           <div class="search-box">
@@ -112,24 +110,8 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- Sample data rows -->
-              <tr>
-                <td><input type="checkbox" class="user-checkbox"></td>
-                <td>John</td>
-                <td>Doe</td>
-                <td>admin@financeflow.com</td>
-                <td><span class="badge badge-admin">Administrator</span></td>
-                <td>rahulxiao</td>
-                <td>rahulxiao</td>
-                <td><span class="badge badge-active">Active</span></td>
-                <td class="action-cell">
-                  <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
-                  <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
-                </td>
-              </tr>
-              <!-- More rows would be dynamically loaded -->
-            </tbody>
+            <tbody id="users-table-body">
+              </tbody>
           </table>
         </div>
 
@@ -147,14 +129,11 @@
         </div>
       </section>
 
-      <!-- Content Moderation Section (hidden by default) -->
       <section id="content-section" class="admin-section" style="display:none;">
-        <!-- Similar structure as users section -->
-      </section>
+        </section>
     </main>
   </div>
 
-  <!-- Add User Modal -->
   <div class="modal" id="add-user-modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -230,6 +209,43 @@
       e.preventDefault();
       alert('User form submitted (demo mode).');
       addUserModal.classList.remove('active');
+    });
+
+    // --- NEW JAVASCRIPT FOR LOADING DATA ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const usersTableBody = document.getElementById('users-table-body');
+
+        function fetchAndDisplayUsers() {
+            // Make sure the path to fetch_users.php is correct relative to admin.php
+            fetch('../controller/fetch_users.php')
+                .then(response => response.json())
+                .then(users => {
+                    usersTableBody.innerHTML = ''; // Clear existing sample rows
+                    users.forEach(user => {
+                        const row = usersTableBody.insertRow();
+                        // Populate cells with data from the 'user' object
+                        // Use default values like 'Regular User' or 'Active' if your DB doesn't have roles/statuses
+                        row.innerHTML = `
+                            <td><input type="checkbox" class="user-checkbox"></td>
+                            <td>${user.u_fname}</td>
+                            <td>${user.u_lname}</td>
+                            <td>${user.u_email}</td>
+                            <td><span class="badge badge-${user.role.toLowerCase().replace(' ', '-') || 'user'}">${user.role || 'Regular User'}</span></td>
+                            <td>${user.u_username}</td>
+                            <td>********</td> <td><span class="badge badge-${user.status.toLowerCase() || 'active'}">${user.status || 'Active'}</span></td>
+                            <td class="action-cell">
+                                <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
+                                <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
+                            </td>
+                        `;
+                    });
+                    feather.replace(); // Re-render feather icons after adding new elements
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        }
+
+        // Call the function to load users when the page loads
+        fetchAndDisplayUsers();
     });
   </script>
 </body>
