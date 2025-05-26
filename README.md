@@ -28,7 +28,7 @@ FinanceFlow is a modern, user-friendly personal finance management application t
 
 1. Clone the repository
    ```
-   https://github.com/rahulxiao/Personal_Finance_Tracker.git
+   https://github.com/rahulxiao/Personal-Finance-Tracker.git
    ```
 
 2. Set up a local PHP server
