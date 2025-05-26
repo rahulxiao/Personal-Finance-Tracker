@@ -171,13 +171,68 @@
         </form>
       </div>
 
+      <div class="modal" id="edit-user-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit User Details</h3>
+        <button class="modal-close" id="close-edit-user-modal"><i data-feather="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <form action="../controller/update_user.php" method="post" id="edit-user-form">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
+          <input type="hidden" name="user_id" id="edit-user-id"> <div class="form-group">
+            <label for="edit-first-name">First Name</label>
+            <input type="text" name="firstname" id="edit-first-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-last-name">Last Name</label>
+            <input type="text" name="lastname" id="edit-last-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-username">Username</label>
+            <input type="text" name="username" id="edit-username" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-email">Email</label>
+            <input type="email" name="email" id="edit-email" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-password">New Password (leave blank to keep current)</label>
+            <input type="password" name="password" id="edit-password" class="form-control" placeholder="Enter new password (optional)">
+          </div>
+          <div class="form-group">
+            <label for="edit-role-filter">Role:</label>
+            <select name="role" id="edit-role-filter" class="form-select">
+              <option value="user">Regular User</option>
+              <option value="moderator">Moderator</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-status-filter">Status:</label>
+            <select name="status" id="edit-status-filter" class="form-select">
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+          
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancel-edit-user">Cancel</button>
+            <button class="btn btn-primary" type="submit" form="edit-user-form">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
     </div>
   </div>
 
   <div id="notification-container" class="notification-container"></div>
   <script src="../assets/js/admin.js"></script>
   <script>
-    feather.replace();
+   feather.replace();
 
     // Set current date
     document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
@@ -187,11 +242,11 @@
       day: 'numeric'
     });
 
-    // Modal toggle functionality
+    // Modal toggle functionality (Add User)
     const addUserBtn = document.getElementById('add-user-btn');
     const addUserModal = document.getElementById('add-user-modal');
     const cancelAddUser = document.getElementById('cancel-add-user');
-    const modalClose = addUserModal.querySelector('.modal-close');
+    const modalCloseAdd = addUserModal.querySelector('.modal-close');
 
     addUserBtn.addEventListener('click', () => {
       addUserModal.classList.add('active');
@@ -202,99 +257,265 @@
       addUserModal.classList.remove('active');
     });
 
-    modalClose.addEventListener('click', () => {
+    modalCloseAdd.addEventListener('click', () => {
       addUserModal.classList.remove('active');
     });
 
-    // Example from previous response, ensure this is in your admin.php's script tag
+    // Add User Form Submission via AJAX (using XMLHttpRequest)
     document.getElementById('add-user-form').addEventListener('submit', (e) => {
       e.preventDefault(); // Prevent default form submission
 
       const form = e.target;
-      const formData = new FormData(form); // Collect form data
+      const formData = new FormData(form);
+      
+      // Convert FormData to URL-encoded string
+      let params = new URLSearchParams(formData).toString();
 
-      // Convert FormData to a plain object for JSON serialization
-      const userData = {};
-      for (let [key, value] of formData.entries()) {
-        userData[key] = value;
-      }
+      let xhttp = new XMLHttpRequest();
+      xhttp.open('POST', '../controller/add-user.php', true);
+      xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); // Set content type for POST data
+      xhttp.send(params);
 
-      fetch('../controller/add-user.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json' // Crucial: tell PHP to expect JSON
-          },
-          body: JSON.stringify(userData) // Send data as JSON string
-        })
-        .then(response => response.json()) // Parse the JSON response
-        .then(data => {
-          if (data.success) {
-            alert(data.message);
-            form.reset();
-            addUserModal.classList.remove('active');
-            fetchAndDisplayUsers(); // Refresh user list
-          } else {
-            alert('Error: ' + data.message);
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          try {
+            let data = JSON.parse(this.responseText);
+            if (data.success) {
+              alert(data.message);
+              form.reset();
+              addUserModal.classList.remove('active');
+              fetchAndDisplayUsers(); // Refresh user list
+            } else {
+              alert('Error: ' + data.message);
+            }
+          } catch (error) {
+            console.error('JSON parsing error:', error);
+            alert('An unexpected response was received from the server.');
           }
-        })
-        .catch(error => {
-          console.error('Error adding user:', error);
-          alert('An error occurred while trying to add the user. Please try again.');
-        });
+        } else if (this.readyState == 4) {
+          alert('Server error: ' + this.status);
+          console.error('XHR request failed:', this.status, this.responseText);
+        }
+      };
     });
 
-    // --- JAVASCRIPT FOR LOADING AND INTERACTIVE SEARCH DATA ---
+
+    // --- JAVASCRIPT FOR LOADING, INTERACTIVE SEARCH, EDIT AND DELETE DATA ---
     document.addEventListener('DOMContentLoaded', function() {
       const usersTableBody = document.getElementById('users-table-body');
       const userSearchInput = document.getElementById('user-search');
       const searchButton = document.getElementById('search-btn');
 
+      // Edit User Modal Elements
+      const editUserModal = document.getElementById('edit-user-modal');
+      const closeEditUserModal = document.getElementById('close-edit-user-modal');
+      const cancelEditUserBtn = document.getElementById('cancel-edit-user');
+      const editUserForm = document.getElementById('edit-user-form');
+      const editUserId = document.getElementById('edit-user-id');
+      const editFirstName = document.getElementById('edit-first-name');
+      const editLastName = document.getElementById('edit-last-name');
+      const editUsername = document.getElementById('edit-username');
+      const editEmail = document.getElementById('edit-email');
+      const editPassword = document.getElementById('edit-password'); // This is for new password, leave blank for no change
+      const editRole = document.getElementById('edit-role-filter');
+      const editStatus = document.getElementById('edit-status-filter');
+
+
+      // Function to fetch and display users (using XMLHttpRequest)
       function fetchAndDisplayUsers(searchTerm = '') {
         let url = '../controller/fetch_users.php'; // Path to your fetch_users.php
         if (searchTerm) {
           url += `?query=${encodeURIComponent(searchTerm)}`; // Add search term as GET parameter
         }
 
-        fetch(url)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json(); // Parse the JSON response
-          })
-          .then(users => {
-            usersTableBody.innerHTML = ''; // Clear existing rows
-            if (users.length === 0) {
-              const noResultsRow = usersTableBody.insertRow();
-              noResultsRow.innerHTML = `<td colspan="9" style="text-align: center; padding: 20px; color: #b0b0b0;">No users found matching your search.</td>`;
-            } else {
-              users.forEach(user => {
-                const row = usersTableBody.insertRow();
-                // Ensure consistent data structure from PHP, add defaults if missing
-                const role = user.role || 'Regular User';
-                const status = user.status || 'Active';
-                const passwordDisplay = '********'; // Never display actual passwords
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('GET', url, true);
+        xhttp.send();
 
-                row.innerHTML = `
-                                    <td><input type="checkbox" class="user-checkbox"></td>
-                                    <td>${user.u_fname}</td>
-                                    <td>${user.u_lname}</td>
-                                    <td>${user.u_email}</td>
-                                    <td><span class="badge badge-${role.toLowerCase().replace(' ', '-')}">${role}</span></td>
-                                    <td>${user.u_username}</td>
-                                    <td>${passwordDisplay}</td>
-                                    <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
-                                    <td class="action-cell">
-                                        <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
-                                        <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
-                                    </td>
-                                `;
-              });
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            try {
+              let users = JSON.parse(this.responseText);
+              usersTableBody.innerHTML = ''; // Clear existing rows
+              if (users.length === 0) {
+                const noResultsRow = usersTableBody.insertRow();
+                noResultsRow.innerHTML = `<td colspan="9" style="text-align: center; padding: 20px; color: var(--text-muted);">No users found matching your search.</td>`;
+              } else {
+                users.forEach(user => {
+                  const row = usersTableBody.insertRow();
+                  const role = user.role || 'user';
+                  const status = user.status || 'active';
+                  const passwordDisplay = '********';
+
+                  row.innerHTML = `
+                                <td><input type="checkbox" class="user-checkbox"></td>
+                                <td>${user.u_fname}</td>
+                                <td>${user.u_lname}</td>
+                                <td>${user.u_email}</td>
+                                <td><span class="badge badge-${role.toLowerCase().replace(' ', '-')}">${role.charAt(0).toUpperCase() + role.slice(1)}</span></td>
+                                <td>${user.u_username}</td>
+                                <td>${passwordDisplay}</td>
+                                <td><span class="badge badge-${status.toLowerCase()}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon btn-edit" data-id="${user.u_id}"><i data-feather="edit-2"></i></button>
+                                    <button class="btn-icon btn-delete" data-id="${user.u_id}"><i data-feather="trash-2"></i></button>
+                                </td>
+                            `;
+                });
+              }
+              feather.replace(); // Re-render feather icons after adding new elements
+              attachEditDeleteListeners(); // Attach listeners to new buttons
+            } catch (error) {
+              console.error('JSON parsing error:', error);
+              alert('An unexpected response was received from the server while fetching users.');
             }
-            feather.replace(); // Re-render feather icons after adding new elements
-          })
-          .catch(error => console.error('Error fetching users:', error));
+          } else if (this.readyState == 4) {
+            console.error('XHR request failed for fetching users:', this.status, this.responseText);
+            // Optionally, display an error message to the user
+          }
+        };
       }
+
+      // Function to attach event listeners to dynamically created edit/delete buttons
+      function attachEditDeleteListeners() {
+        // Edit button listeners
+        document.querySelectorAll('.btn-edit').forEach(button => {
+          button.addEventListener('click', function() {
+            const userId = this.dataset.id;
+            fetchUserDetails(userId);
+          });
+        });
+
+        // Delete button listeners
+        document.querySelectorAll('.btn-delete').forEach(button => {
+          button.addEventListener('click', function() {
+            const userId = this.dataset.id;
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+              deleteUser(userId);
+            }
+          });
+        });
+      }
+
+      // Function to fetch a single user's details for editing (using XMLHttpRequest)
+      function fetchUserDetails(userId) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('GET', `../controller/fetch_single_user.php?id=${userId}`, true);
+        xhttp.send();
+
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            try {
+              let user = JSON.parse(this.responseText);
+              if (user.success) {
+                editUserId.value = user.data.u_id;
+                editFirstName.value = user.data.u_fname;
+                editLastName.value = user.data.u_lname;
+                editUsername.value = user.data.u_username;
+                editEmail.value = user.data.u_email;
+                editPassword.value = ''; // Always clear password field for security
+                editRole.value = user.data.role || 'user';
+                editStatus.value = user.data.status || 'active';
+
+                editUserModal.classList.add('active'); // Show the modal
+              } else {
+                alert('Error fetching user details: ' + user.message);
+              }
+            } catch (error) {
+              console.error('JSON parsing error:', error);
+              alert('An unexpected response was received while fetching user details.');
+            }
+          } else if (this.readyState == 4) {
+            alert('Server error fetching user details: ' + this.status);
+            console.error('XHR request failed for fetching user details:', this.status, this.responseText);
+          }
+        };
+      }
+
+      // Function to handle user deletion (using XMLHttpRequest)
+      function deleteUser(userId) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('POST', '../controller/delete_user.php', true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        let params = `user_id=${encodeURIComponent(userId)}&csrf_token=${encodeURIComponent(csrfToken)}`;
+
+        xhttp.send(params);
+
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            try {
+              let data = JSON.parse(this.responseText);
+              if (data.success) {
+                alert(data.message);
+                fetchAndDisplayUsers(); // Refresh the user list
+              } else {
+                alert('Error deleting user: ' + data.message);
+              }
+            } catch (error) {
+              console.error('JSON parsing error:', error);
+              alert('An unexpected response was received while deleting the user.');
+            }
+          } else if (this.readyState == 4) {
+            alert('Server error deleting user: ' + this.status);
+            console.error('XHR request failed for deleting user:', this.status, this.responseText);
+          }
+        };
+      }
+
+      // Edit User Form Submission via AJAX (using XMLHttpRequest)
+      editUserForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(editUserForm);
+        
+        // Remove password from formData if it's empty, so it's not sent
+        if (formData.get('password') === '') {
+            formData.delete('password');
+        }
+
+        // Convert FormData to URL-encoded string
+        let params = new URLSearchParams(formData).toString();
+
+        let xhttp = new XMLHttpRequest();
+        xhttp.open('POST', '../controller/update_user.php', true);
+        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhttp.send(params);
+
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            try {
+              let data = JSON.parse(this.responseText);
+              if (data.success) {
+                alert(data.message);
+                editUserModal.classList.remove('active'); // Close modal
+                fetchAndDisplayUsers(); // Refresh user list
+              } else {
+                alert('Error updating user: ' + data.message);
+              }
+            } catch (error) {
+              console.error('JSON parsing error:', error);
+              alert('An unexpected response was received while updating the user.');
+            }
+          } else if (this.readyState == 4) {
+            alert('Server error updating user: ' + this.status);
+            console.error('XHR request failed for updating user:', this.status, this.responseText);
+          }
+        };
+      });
+
+
+      // Close Edit User Modal functionality
+      closeEditUserModal.addEventListener('click', () => {
+        editUserModal.classList.remove('active');
+      });
+
+      cancelEditUserBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        editUserModal.classList.remove('active');
+      });
+
 
       // Initial load of users when the page loads
       fetchAndDisplayUsers();
@@ -307,7 +528,6 @@
 
       // Optional: Event listener for real-time search as user types
       userSearchInput.addEventListener('keyup', (event) => {
-        // You can add a debounce here for performance on large datasets
         const searchTerm = userSearchInput.value.trim();
         fetchAndDisplayUsers(searchTerm);
       });

@@ -46,5 +46,5 @@ if (isset($_POST['submit'])) {
     header('Location: ../view/register.php');
 } else {
     $_SESSION['register_errors']['request'] = "Invalid request! Please submit the form.";
-    header('Location: ../view/register.php');
+    header('Location: ../view/register.php?error=invalid_request');
 }
