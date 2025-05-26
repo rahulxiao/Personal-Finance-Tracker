@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
   <link rel="stylesheet" href="../assets/css/admin.css" />
+  <link rel="stylesheet" href="../assets/css/feature.css" />
   <style>
 
   </style>
@@ -111,7 +112,7 @@
               </tr>
             </thead>
             <tbody id="users-table-body">
-              </tbody>
+            </tbody>
           </table>
         </div>
 
@@ -130,7 +131,7 @@
       </section>
 
       <section id="content-section" class="admin-section" style="display:none;">
-        </section>
+      </section>
     </main>
   </div>
 
@@ -196,7 +197,8 @@
       addUserModal.classList.add('active');
     });
 
-    cancelAddUser.addEventListener('click', () => {
+    cancelAddUser.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent default button behavior
       addUserModal.classList.remove('active');
     });
 
@@ -204,48 +206,111 @@
       addUserModal.classList.remove('active');
     });
 
-    // // Prevent form submission for demo purposes
+    // Example from previous response, ensure this is in your admin.php's script tag
     document.getElementById('add-user-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('User form submitted (demo mode).');
-      addUserModal.classList.remove('active');
+      e.preventDefault(); // Prevent default form submission
+
+      const form = e.target;
+      const formData = new FormData(form); // Collect form data
+
+      // Convert FormData to a plain object for JSON serialization
+      const userData = {};
+      for (let [key, value] of formData.entries()) {
+        userData[key] = value;
+      }
+
+      fetch('../controller/add-user.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json' // Crucial: tell PHP to expect JSON
+          },
+          body: JSON.stringify(userData) // Send data as JSON string
+        })
+        .then(response => response.json()) // Parse the JSON response
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            form.reset();
+            addUserModal.classList.remove('active');
+            fetchAndDisplayUsers(); // Refresh user list
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error adding user:', error);
+          alert('An error occurred while trying to add the user. Please try again.');
+        });
     });
 
-    // --- NEW JAVASCRIPT FOR LOADING DATA ---
+    // --- JAVASCRIPT FOR LOADING AND INTERACTIVE SEARCH DATA ---
     document.addEventListener('DOMContentLoaded', function() {
-        const usersTableBody = document.getElementById('users-table-body');
+      const usersTableBody = document.getElementById('users-table-body');
+      const userSearchInput = document.getElementById('user-search');
+      const searchButton = document.getElementById('search-btn');
 
-        function fetchAndDisplayUsers() {
-            // Make sure the path to fetch_users.php is correct relative to admin.php
-            fetch('../controller/fetch_users.php')
-                .then(response => response.json())
-                .then(users => {
-                    usersTableBody.innerHTML = ''; // Clear existing sample rows
-                    users.forEach(user => {
-                        const row = usersTableBody.insertRow();
-                        // Populate cells with data from the 'user' object
-                        // Use default values like 'Regular User' or 'Active' if your DB doesn't have roles/statuses
-                        row.innerHTML = `
-                            <td><input type="checkbox" class="user-checkbox"></td>
-                            <td>${user.u_fname}</td>
-                            <td>${user.u_lname}</td>
-                            <td>${user.u_email}</td>
-                            <td><span class="badge badge-${user.role.toLowerCase().replace(' ', '-') || 'user'}">${user.role || 'Regular User'}</span></td>
-                            <td>${user.u_username}</td>
-                            <td>********</td> <td><span class="badge badge-${user.status.toLowerCase() || 'active'}">${user.status || 'Active'}</span></td>
-                            <td class="action-cell">
-                                <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
-                                <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
-                            </td>
-                        `;
-                    });
-                    feather.replace(); // Re-render feather icons after adding new elements
-                })
-                .catch(error => console.error('Error fetching users:', error));
+      function fetchAndDisplayUsers(searchTerm = '') {
+        let url = '../controller/fetch_users.php'; // Path to your fetch_users.php
+        if (searchTerm) {
+          url += `?query=${encodeURIComponent(searchTerm)}`; // Add search term as GET parameter
         }
 
-        // Call the function to load users when the page loads
-        fetchAndDisplayUsers();
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json(); // Parse the JSON response
+          })
+          .then(users => {
+            usersTableBody.innerHTML = ''; // Clear existing rows
+            if (users.length === 0) {
+              const noResultsRow = usersTableBody.insertRow();
+              noResultsRow.innerHTML = `<td colspan="9" style="text-align: center; padding: 20px; color: #b0b0b0;">No users found matching your search.</td>`;
+            } else {
+              users.forEach(user => {
+                const row = usersTableBody.insertRow();
+                // Ensure consistent data structure from PHP, add defaults if missing
+                const role = user.role || 'Regular User';
+                const status = user.status || 'Active';
+                const passwordDisplay = '********'; // Never display actual passwords
+
+                row.innerHTML = `
+                                    <td><input type="checkbox" class="user-checkbox"></td>
+                                    <td>${user.u_fname}</td>
+                                    <td>${user.u_lname}</td>
+                                    <td>${user.u_email}</td>
+                                    <td><span class="badge badge-${role.toLowerCase().replace(' ', '-')}">${role}</span></td>
+                                    <td>${user.u_username}</td>
+                                    <td>${passwordDisplay}</td>
+                                    <td><span class="badge badge-${status.toLowerCase()}">${status}</span></td>
+                                    <td class="action-cell">
+                                        <button class="btn-icon btn-edit"><i data-feather="edit-2"></i></button>
+                                        <button class="btn-icon btn-delete"><i data-feather="trash-2"></i></button>
+                                    </td>
+                                `;
+              });
+            }
+            feather.replace(); // Re-render feather icons after adding new elements
+          })
+          .catch(error => console.error('Error fetching users:', error));
+      }
+
+      // Initial load of users when the page loads
+      fetchAndDisplayUsers();
+
+      // Event listener for the search button click
+      searchButton.addEventListener('click', () => {
+        const searchTerm = userSearchInput.value.trim();
+        fetchAndDisplayUsers(searchTerm);
+      });
+
+      // Optional: Event listener for real-time search as user types
+      userSearchInput.addEventListener('keyup', (event) => {
+        // You can add a debounce here for performance on large datasets
+        const searchTerm = userSearchInput.value.trim();
+        fetchAndDisplayUsers(searchTerm);
+      });
     });
   </script>
 </body>

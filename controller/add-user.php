@@ -1,47 +1,73 @@
 <?php
-require_once '../model/user_model.php';
+session_start(); // Start session to access CSRF token
+require_once '../model/db.php';         // Your database connection
+require_once '../model/user_model.php'; // Contains the addUser function
 
-// Check if form is submitted properly
-if (!isset($_POST['submit'])) {
-    die("No data submitted");
-}
+header('Content-Type: application/json'); // Always respond with JSON
 
-// Sanitize input (basic level)
-$fname = trim($_POST['firstname']);
-$lname = trim($_POST['lastname']);
-$uname = trim($_POST['username']);
-$email = trim($_POST['email']);
-$pass  = trim($_POST['password']);
+$response = ['success' => false, 'message' => 'An unknown error occurred.'];
 
-// Validate required fields
-if (empty($fname) || empty($lname) || empty($uname) || empty($email) || empty($pass)) {
-    die("All fields are required.");
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        // If tokens don't match, or if session token is missing
+        $response = ['success' => false, 'message' => 'CSRF token mismatch.'];
+        echo json_encode($response);
+        exit(); // Stop script execution
+    }
 
-// Optional: Validate email format
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    die("Invalid email format.");
-}
+    // 2. Input Collection: Prioritize JSON if sent via fetch with 'application/json'
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
 
+    // If JSON decoding fails, or if it's not JSON, fall back to $_POST for form-urlencoded
+    if (json_last_error() !== JSON_ERROR_NONE || !is_array($data) || empty($data)) {
+        $data = $_POST; // This will catch traditional form submissions and form-urlencoded AJAX
+    }
 
-// Build user array
-$user = [
-    'firstname' => $fname,
-    'lastname'  => $lname,
-    'username'  => $uname,
-    'email'     => $email,
-    'password'  => $hashedPassword
-];
+    // Extract and trim data
+    $firstname = trim($data['firstname'] ?? '');
+    $lastname = trim($data['lastname'] ?? '');
+    $username = trim($data['username'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $password = $data['password'] ?? '';
 
-// Call model function
-$result = addUser($user);
+    // 3. Validation
+    if (empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($password)) {
+        $response = ['success' => false, 'message' => 'All fields are required.'];
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $response = ['success' => false, 'message' => 'Invalid email format.'];
+    } else {
+        // 4. Password Hashing (CRITICAL!)
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        if ($hashedPassword === false) {
+            $response = ['success' => false, 'message' => 'Password hashing failed.'];
+            echo json_encode($response);
+            exit();
+        }
 
-if ($result === "exists") {
-    die("Username or email already exists.");
-} elseif ($result === "success") {
-    echo "User added successfully.";
+        // Build user array for the model
+        $user = [
+            'firstname' => $firstname,
+            'lastname'  => $lastname,
+            'username'  => $username,
+            'email'     => $email,
+            'password'  => $hashedPassword // Pass the HASHED password
+        ];
+
+        // 5. Call model function and handle results (user_model.php needs update too)
+        $result = addUser($user); // The addUser function itself needs to use prepared statements or mysqli_real_escape_string
+
+        if ($result === "success") {
+            $response = ['success' => true, 'message' => 'User added successfully.'];
+        } elseif ($result === "exists") {
+            $response = ['success' => false, 'message' => 'Username or Email already exists.'];
+        } else {
+            $response = ['success' => false, 'message' => 'Failed to add user to database.'];
+        }
+    }
 } else {
-    die("Failed to add user.");
+    $response = ['success' => false, 'message' => 'Invalid request method. Only POST allowed.'];
 }
 
+echo json_encode($response);
 ?>
