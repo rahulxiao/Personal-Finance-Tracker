@@ -143,7 +143,7 @@
       </div>
       <div class="modal-body">
         <form action="../controller/add-user.php" method="post" id="add-user-form">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+          
           <div class="form-group">
             <label for="first-name">First Name</label>
             <input type="text" name="firstname" id="first-name" class="form-control" placeholder="Enter first name" required>
@@ -179,7 +179,7 @@
       </div>
       <div class="modal-body">
         <form action="../controller/update_user.php" method="post" id="edit-user-form">
-          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
+          
           <input type="hidden" name="user_id" id="edit-user-id"> <div class="form-group">
             <label for="edit-first-name">First Name</label>
             <input type="text" name="firstname" id="edit-first-name" class="form-control" required>
@@ -438,8 +438,8 @@
         xhttp.open('POST', '../controller/delete_user.php', true);
         xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-        let params = `user_id=${encodeURIComponent(userId)}&csrf_token=${encodeURIComponent(csrfToken)}`;
+        // const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        let params = `user_id=${encodeURIComponent(userId)}`; // REMOVED CSRF token from deleteUser params
 
         xhttp.send(params);
 
