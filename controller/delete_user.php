@@ -7,7 +7,7 @@ header('Content-Type: application/json'); // Ensure the response is JSON
 
 if (isset($_POST['user_id'])) {
     $userId = $_POST['user_id'];
-    $result = deleteUser($userId); // Call the deleteUser function from user_model.php
+    $result = deleteUser($userId); 
 
     if ($result === "success") {
         echo json_encode(['success' => true, 'message' => 'User deleted successfully!']);

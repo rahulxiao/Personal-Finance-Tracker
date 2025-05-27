@@ -438,8 +438,8 @@
         xhttp.open('POST', '../controller/delete_user.php', true);
         xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-        // const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-        let params = `user_id=${encodeURIComponent(userId)}`; // REMOVED CSRF token from deleteUser params
+        
+        let params = `user_id=${encodeURIComponent(userId)}`; 
 
         xhttp.send(params);
 
