@@ -25,331 +25,329 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Income form handling
-    const form = document.getElementById('incomeForm');
-    const incomeInput = document.getElementById('income');
-    const sourceInput = document.getElementById('source');
-    const totalIncomeElem = document.getElementById('totalIncome');
-    const incomeTableBody = document.getElementById('incomeTableBody');
+    // Load all income types
+    function loadAllIncomes() {
+        loadIncomes();
+        loadRecurringIncomes();
+        loadSideHustleIncomes();
+    }
 
-    function addIncome(event) {
-        event.preventDefault();
+    // Paycheck income functions
+    function loadIncomes() {
+        fetch('../controller/incomeDB.php?type=paycheck')
+            .then(response => response.json())
+            .then(incomes => {
+                const tableBody = document.getElementById('incomeTableBody');
+                tableBody.innerHTML = '';
+                
+                window.totalIncome = 0;
+                
+                incomes.forEach(income => {
+                    const row = document.createElement('tr');
+                    const actionIcon = document.createElement('button');
+                    actionIcon.className = 'action-icon delete-action';
+                    actionIcon.setAttribute('title', 'Delete Income');
+                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
+                    
+                    actionIcon.setAttribute('data-tooltip', 'Delete this income');
+                    actionIcon.setAttribute('data-income-id', income.id);
+                    
+                    actionIcon.addEventListener('click', function() {
+                        handleDelete(income.id, income.source, 'paycheck');
+                    });
 
-        const incomeValRaw = incomeInput.value.trim();
-        const sourceVal = sourceInput.value.trim();
-
-        const incomeVal = parseFloat(incomeValRaw);
-        if (!incomeValRaw || isNaN(incomeVal) || incomeVal <= 0) {
-            alert('Please enter a valid positive income amount.');
-            incomeInput.focus();
-            return;
-        }
-
-        if (!sourceVal) {
-            alert('Please enter the source of income.');
-            sourceInput.focus();
-            return;
-        }
-
-        window.totalIncome += incomeVal;
-        totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
-
-        const newRow = document.createElement('tr');
-        const today = new Date();
-        const formattedDate = today.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
-
-        newRow.innerHTML = `
-            <td>${sourceVal}</td>
-            <td>$${incomeVal.toFixed(2)}</td>
-            <td>${formattedDate}</td>
-            <td>
-                <button class="delete-btn" onclick="deleteIncome(this)">Delete</button>
-            </td>
-        `;
-        incomeTableBody.appendChild(newRow);
-
-        incomeInput.value = '';
-        sourceInput.value = '';
-        incomeInput.focus();
-
-        // Update grand total
+                    row.innerHTML = `
+                        <td>${income.source}</td>
+                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                        <td>${formatDate(income.date)}</td>
+                        <td></td>
+                    `;
+                    row.cells[3].appendChild(actionIcon);
+                    tableBody.appendChild(row);
+                    
+                    window.totalIncome += parseFloat(income.amount);
+                });
+                
+                document.getElementById('totalIncome').textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
         updateGrandTotalIncome();
-    }
-
-    if (form) {
-        form.addEventListener('submit', addIncome);
-    }
-
-    // Make deleteIncome function available globally
-    window.deleteIncome = function(button) {
-        const row = button.closest('tr');
-        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
-        
-        // Update total income
-        window.totalIncome -= amount;
-        totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
-        
-        // Remove the row
-        row.remove();
-
-        // Update grand total
-        updateGrandTotalIncome();
-    };
-
-    // Recurring Income form handling
-    const recurringForm = document.getElementById('recurringIncomeForm');
-    const recurringSourceInput = document.getElementById('recurringSource');
-    const recurringAmountInput = document.getElementById('recurringAmount');
-    const recurringDateInput = document.getElementById('recurringDate');
-    const recurringIncomeTableBody = document.getElementById('recurringIncomeTableBody');
-    const recurringTotalIncomeElem = document.getElementById('recurringTotalIncome');
-
-    function addRecurringIncome(event) {
-        event.preventDefault();
-
-        const sourceVal = recurringSourceInput.value.trim();
-        const amountValRaw = recurringAmountInput.value.trim();
-        const dateVal = recurringDateInput.value;
-        const amountVal = parseFloat(amountValRaw);
-
-        if (!sourceVal) {
-            alert('Please enter the source of recurring income.');
-            recurringSourceInput.focus();
-            return;
-        }
-        if (!amountValRaw || isNaN(amountVal) || amountVal <= 0) {
-            alert('Please enter a valid positive amount.');
-            recurringAmountInput.focus();
-            return;
-        }
-        if (!dateVal) {
-            alert('Please select a date.');
-            recurringDateInput.focus();
-            return;
-        }
-
-        window.recurringTotalIncome += amountVal;
-        if (recurringTotalIncomeElem) {
-            recurringTotalIncomeElem.textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
-        }
-
-        // Format date to match Paycheck section
-        const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
-
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${sourceVal}</td>
-            <td>$${amountVal.toFixed(2)}</td>
-            <td>${formattedDate}</td>
-            <td>
-                <button class="delete-btn" onclick="deleteRecurringIncome(this)">Delete</button>
-            </td>
-        `;
-        recurringIncomeTableBody.appendChild(newRow);
-
-        recurringSourceInput.value = '';
-        recurringAmountInput.value = '';
-        recurringDateInput.value = '';
-        recurringSourceInput.focus();
-
-        // Update grand total
-        updateGrandTotalIncome();
-    }
-
-    if (recurringForm) {
-        recurringForm.addEventListener('submit', addRecurringIncome);
-    }
-
-    // Side Hustle Income form handling
-    function addSideHustleIncome(event) {
-        event.preventDefault();
-
-        const sourceInput = document.getElementById('sideHustleSource');
-        const amountInput = document.getElementById('sideHustleAmount');
-        const dateInput = document.getElementById('sideHustleDate');
-        const tableBody = document.getElementById('sideHustleIncomeTableBody');
-        const totalElem = document.getElementById('sideHustleTotalIncome');
-
-        const sourceVal = sourceInput.value.trim();
-        const amountValRaw = amountInput.value.trim();
-        const dateVal = dateInput.value;
-        const amountVal = parseFloat(amountValRaw);
-
-        if (!sourceVal) {
-            alert('Please enter the source of side hustle income.');
-            sourceInput.focus();
-            return;
-        }
-        if (!amountValRaw || isNaN(amountVal) || amountVal <= 0) {
-            alert('Please enter a valid positive amount.');
-            amountInput.focus();
-            return;
-        }
-        if (!dateVal) {
-            alert('Please select a date.');
-            dateInput.focus();
-            return;
-        }
-
-        window.sideHustleTotalIncome += amountVal;
-        if (totalElem) {
-            totalElem.textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
-        }
-
-        // Format date to match Paycheck section
-        const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        });
-
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${sourceVal}</td>
-            <td>$${amountVal.toFixed(2)}</td>
-            <td>${formattedDate}</td>
-            <td>
-                <button class="delete-btn" onclick="deleteSideHustleIncome(this)">Delete</button>
-            </td>
-        `;
-        tableBody.appendChild(newRow);
-
-        sourceInput.value = '';
-        amountInput.value = '';
-        dateInput.value = '';
-        sourceInput.focus();
-
-        // Update grand total
-        updateGrandTotalIncome();
-    }
-
-    const sideHustleForm = document.getElementById('sideHustleIncomeForm');
-    if (sideHustleForm) {
-        sideHustleForm.addEventListener('submit', addSideHustleIncome);
-    }
-
-    // Initialize forecast chart
-    function initForecastChart() {
-        const ctx = document.getElementById('incomeForecastChart');
-        if (!ctx) return null;
-        return new Chart(ctx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Projected Income',
-                    data: [0, 0, 0, 0, 0, 0],
-                    borderColor: '#6366f1',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#f8f9fa'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#2d2d2d'
-                        },
-                        ticks: {
-                            color: '#9ca3af'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#2d2d2d'
-                        },
-                        ticks: {
-                            color: '#9ca3af'
-                        }
-                    }
+                
+                if (window.feather) {
+                    feather.replace();
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while loading incomes');
+            });
+    }
+
+    // Recurring income functions
+    function loadRecurringIncomes() {
+        fetch('../controller/incomeDB.php?type=recurring')
+            .then(response => response.json())
+            .then(incomes => {
+                const tableBody = document.getElementById('recurringIncomeTableBody');
+                tableBody.innerHTML = '';
+                
+                window.recurringTotalIncome = 0;
+                
+                incomes.forEach(income => {
+                    const row = document.createElement('tr');
+                    const actionIcon = document.createElement('button');
+                    actionIcon.className = 'action-icon delete-action';
+                    actionIcon.setAttribute('title', 'Delete Recurring Income');
+                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
+                    
+                    actionIcon.setAttribute('data-tooltip', 'Delete this recurring income');
+                    actionIcon.setAttribute('data-income-id', income.id);
+                    
+                    actionIcon.addEventListener('click', function() {
+                        handleDelete(income.id, income.source, 'recurring');
+                    });
+
+                    row.innerHTML = `
+                        <td>${income.source}</td>
+                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                        <td>${formatDate(income.date)}</td>
+                        <td></td>
+                    `;
+                    row.cells[3].appendChild(actionIcon);
+                    tableBody.appendChild(row);
+                    
+                    window.recurringTotalIncome += parseFloat(income.amount);
+                });
+                
+                document.getElementById('recurringTotalIncome').textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
+                updateGrandTotalIncome();
+                
+                if (window.feather) {
+                    feather.replace();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while loading recurring incomes');
+            });
+    }
+
+    // Side hustle income functions
+    function loadSideHustleIncomes() {
+        fetch('../controller/incomeDB.php?type=sidehustle')
+            .then(response => response.json())
+            .then(incomes => {
+                const tableBody = document.getElementById('sideHustleIncomeTableBody');
+                tableBody.innerHTML = '';
+                
+                window.sideHustleTotalIncome = 0;
+                
+                incomes.forEach(income => {
+                    const row = document.createElement('tr');
+                    const actionIcon = document.createElement('button');
+                    actionIcon.className = 'action-icon delete-action';
+                    actionIcon.setAttribute('title', 'Delete Side Hustle Income');
+                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
+                    
+                    actionIcon.setAttribute('data-tooltip', 'Delete this side hustle income');
+                    actionIcon.setAttribute('data-income-id', income.id);
+                    
+                    actionIcon.addEventListener('click', function() {
+                        handleDelete(income.id, income.source, 'sidehustle');
+                    });
+
+                    row.innerHTML = `
+                        <td>${income.source}</td>
+                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                        <td>${formatDate(income.date)}</td>
+                        <td></td>
+                    `;
+                    row.cells[3].appendChild(actionIcon);
+                    tableBody.appendChild(row);
+                    
+                    window.sideHustleTotalIncome += parseFloat(income.amount);
+                });
+                
+                document.getElementById('sideHustleTotalIncome').textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
+        updateGrandTotalIncome();
+                
+                if (window.feather) {
+                    feather.replace();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while loading side hustle incomes');
+            });
+    }
+
+    // Generic delete handler for all income types
+    function handleDelete(id, source, type) {
+        const typeLabels = {
+            'paycheck': 'paycheck',
+            'recurring': 'recurring income',
+            'sidehustle': 'side hustle income'
+        };
+        
+        if (confirm(`Are you sure you want to delete the ${typeLabels[type]} from ${source}?`)) {
+            fetch(`../controller/incomeDB.php?type=${type}&id=${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('success', data.message);
+                    
+                    // Reload the appropriate income type
+                    switch(type) {
+                        case 'paycheck':
+                            loadIncomes();
+                            break;
+                        case 'recurring':
+                            loadRecurringIncomes();
+                            break;
+                        case 'sidehustle':
+                            loadSideHustleIncomes();
+                            break;
+                    }
+                } else {
+                    showMessage('error', data.message || `Error deleting ${typeLabels[type]}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', `An error occurred while deleting the ${typeLabels[type]}`);
+            });
+        }
+    }
+
+    // Form submission handlers
+    const paycheckForm = document.getElementById('incomeForm');
+    const recurringForm = document.getElementById('recurringIncomeForm');
+    const sideHustleForm = document.getElementById('sideHustleIncomeForm');
+
+    function setupFormValidation(form, type) {
+        if (!form) return;
+
+        const sourceInput = form.querySelector('input[type="text"]');
+        if (sourceInput) {
+            sourceInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[0-9]/g, '');
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sourceValue = sourceInput.value.trim();
+            
+            if (/[0-9]/.test(sourceValue)) {
+                showMessage('error', 'Income source cannot contain numbers');
+                return;
             }
+            
+            if (!sourceValue) {
+                showMessage('error', 'Please enter a valid income source');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            formData.append('type', type);
+            
+            fetch('../controller/incomeDB.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.reset();
+                    showMessage('success', data.message);
+                    loadAllIncomes();
+                } else {
+                    const errors = Array.isArray(data.errors) ? data.errors.join('<br>') : data.message;
+                    showMessage('error', errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while saving the income');
+            });
         });
     }
 
-    let forecastChart = initForecastChart();
+    // Setup form validation for all forms
+    setupFormValidation(paycheckForm, 'paycheck');
+    setupFormValidation(recurringForm, 'recurring');
+    setupFormValidation(sideHustleForm, 'sidehustle');
 
-    function updateForecastChart() {
-        if (!forecastChart) return;
-        // Update chart with new data
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        const projectedData = months.map(() => window.totalIncome);
-        forecastChart.data.datasets[0].data = projectedData;
-        forecastChart.update();
-    }
-
-    // Make delete functions available globally
-    window.deleteRecurringIncome = function(button) {
-        const row = button.closest('tr');
-        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
-        
-        // Update recurring total income
-        window.recurringTotalIncome -= amount;
-        recurringTotalIncomeElem.textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
-        
-        // Remove the row
-        row.remove();
-
-        // Update grand total
-        updateGrandTotalIncome();
-    };
-
-    window.deleteSideHustleIncome = function(button) {
-        const row = button.closest('tr');
-        const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
-        
-        // Update side hustle total income
-        window.sideHustleTotalIncome -= amount;
-        const totalElem = document.getElementById('sideHustleTotalIncome');
-        totalElem.textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
-        
-        // Remove the row
-        row.remove();
-
-        // Update grand total
-        updateGrandTotalIncome();
-    };
+    // Initial load of all incomes
+    loadAllIncomes();
 });
 
-// Edit and Delete functions
-function editIncome(button) {
-    const row = button.closest('tr');
-    const cells = row.cells;
-    const source = cells[0].textContent;
-    const amount = cells[1].textContent.replace('$', '');
-    // Implement edit functionality (e.g., open a modal or inline editing)
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 }
 
-function deleteIncome(button) {
-    const row = button.closest('tr');
-    const amount = parseFloat(row.cells[1].textContent.replace('$', ''));
+function showMessage(type, message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message`;
+    messageDiv.innerHTML = message;
     
-    // Update total income
-    const totalIncomeElem = document.getElementById('totalIncome');
-    const currentTotal = parseFloat(totalIncomeElem.textContent.replace(/[^0-9.-]+/g, ''));
-    window.totalIncome = currentTotal - amount; // Update the global totalIncome variable
-    totalIncomeElem.textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
+    const container = document.querySelector('.income-container');
+    container.insertBefore(messageDiv, container.firstChild);
     
-    // Remove the row
-    row.remove();
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 5000);
+}
 
-    // Update grand total
-    updateGrandTotalIncome();
-} 
+// Add animation styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(-20px); }
+    }
+    
+    .delete-action {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 5px;
+        transition: color 0.3s ease;
+    }
+    
+    .delete-action:hover {
+        color: #c82333;
+    }
+    
+    .message {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+`;
+document.head.appendChild(style); 

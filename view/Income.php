@@ -1,37 +1,15 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        require_once('../controller/incomeCheck.php');
+        
         $errors = [];
         $success = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (empty($_POST['incomeSource'])) {
-                $errors[] = "Income source is required";
-            } elseif (strlen($_POST['incomeSource']) > 100) {
-                $errors[] = "Income source must be less than 100 characters";
-            }
-
-            if (empty($_POST['incomeAmount'])) {
-                $errors[] = "Income amount is required";
-            } if (!isset($_POST['incomeAmount']) || !is_numeric($_POST['incomeAmount']) || floatval($_POST['incomeAmount']) <= 0) {
-                $errors[] = "Income amount must be a positive number";
-            }          
-
-
-            if (empty($_POST['incomeDate'])) {
-                $errors[] = "Income date is required";
-            } else {
-                $incomeDate = strtotime($_POST['incomeDate']);
-                if ($incomeDate === false) {
-                    $errors[] = "Invalid date format";
-                } elseif ($incomeDate > strtotime('today')) {
-                    $errors[] = "Income date cannot be in the future";
-                }
-            }
-
-            if (empty($errors)) {
-                $success = true;
-            }
+            $validationResult = validateIncome($_POST);
+            $errors = $validationResult['errors'];
+            $success = $validationResult['success'];
         }
 ?>
 <!DOCTYPE html>
@@ -96,8 +74,8 @@
                 <?php endif; ?>
 
                 <form id="incomeForm" action="../controller/incomeDB.php" method="POST">
-                    <input type="text" id="source" name="incomeSource" placeholder="Income Source" required />
-                    <input type="number" id="income" name="incomeAmount" min= "0.01" placeholder="Amount" step="0.01" required />
+                    <input type="text" id="incomeSource" name="incomeSource" placeholder="Income Source" required />
+                    <input type="number" id="incomeAmount" name="incomeAmount" min="0.01" step="0.01" placeholder="Amount" required />
                     <input type="date" id="incomeDate" name="incomeDate" required />
                     <input type="submit" value="Add Income" />
                 </form>
@@ -129,9 +107,9 @@
             </div>
             <div id="addRecurringIncome">
                 <form id="recurringIncomeForm" action="../controller/incomeDB.php" method="POST">
-                    <input type="text" id="recurringSource" name="recurringSource" placeholder="Income Source" required />
-                    <input type="number" id="recurringAmount" name="recurringAmount" placeholder="Amount" step="0.01" required />
-                    <input type="date" id="recurringDate" name="recurringDate" required />
+                    <input type="text" id="recurringSource" name="incomeSource" placeholder="Income Source" required />
+                    <input type="number" id="recurringAmount" name="incomeAmount" placeholder="Amount" step="0.01" required />
+                    <input type="date" id="recurringDate" name="incomeDate" required />
                     <input type="submit" value="Add Recurring Income" />
                 </form>
             </div>
@@ -160,10 +138,10 @@
                 </div>
             </div>
             <div id="addSideHustleIncome">
-                <form id="sideHustleIncomeForm">
-                    <input type="text" id="sideHustleSource" name="sideHustleSource" placeholder="Income Source" required />
-                    <input type="number" id="sideHustleAmount" name="sideHustleAmount" placeholder="Amount" step="0.01" required />
-                    <input type="date" id="sideHustleDate" name="sideHustleDate" required />
+                <form id="sideHustleIncomeForm" action="../controller/incomeDB.php" method="POST">
+                    <input type="text" id="sideHustleSource" name="incomeSource" placeholder="Income Source" required />
+                    <input type="number" id="sideHustleAmount" name="incomeAmount" placeholder="Amount" step="0.01" required />
+                    <input type="date" id="sideHustleDate" name="incomeDate" required />
                     <input type="submit" value="Add Side Hustle Income" />
                 </form>
             </div>
@@ -186,7 +164,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- <script src="../assets/js/income.js"></script> -->
+    <script src="../assets/js/income.js"></script>
 </body>
 </html>
 <?php
