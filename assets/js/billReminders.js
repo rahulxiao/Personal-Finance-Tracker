@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Global variables
     let bills = [];
-    let upcomingBills = 0;
 
     // Initialize calendar
     function initializeCalendar() {
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 billsOnDay.forEach(bill => {
                     const billItem = document.createElement('div');
                     billItem.className = 'bill-item';
-                    billItem.textContent = `${bill.name}: $${bill.amount}`;
+                    billItem.textContent = `${bill.name}: $${parseFloat(bill.amount).toFixed(2)}`;
                     billList.appendChild(billItem);
                 });
                 dayElement.appendChild(billList);
@@ -80,83 +79,61 @@ document.addEventListener('DOMContentLoaded', function() {
             if (day === today.getDate() && 
                 month === today.getMonth() && 
                 year === today.getFullYear()) {
-                dayElement.classList.add('due-today');
+                dayElement.classList.add('today');
             }
 
             calendar.appendChild(dayElement);
         }
     }
 
+    // Load bills from database
+    function loadBills() {
+        fetch('../controller/billRemindersDB.php?type=bills')
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    bills = data;
+                    updateBillHistory();
+                    initializeCalendar();
+                    updateUpcomingBills();
+                } else if (data.error) {
+                    showMessage('error', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while loading bill reminders');
+            });
+    }
+
     // Bill form handling
     const billForm = document.getElementById('billForm');
     if (billForm) {
-        // Set minimum date to today for the date input
-        const dueDateInput = document.getElementById('dueDate');
-        const today = new Date().toISOString().split('T')[0];
-        dueDateInput.min = today;
-
-        billForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const billName = document.getElementById('billName').value.trim();
-            const billAmount = parseFloat(document.getElementById('billAmount').value);
-            const dueDate = document.getElementById('dueDate').value;
-            const category = document.getElementById('billCategory').value;
-            const autoPay = document.getElementById('autoPay').checked;
-
-            // Validate inputs
-            if (!billName) {
-                alert('Please enter a bill name.');
-                return;
-            }
-
-            if (isNaN(billAmount) || billAmount <= 0) {
-                alert('Please enter a valid positive amount.');
-                return;
-            }
-
-            if (!dueDate) {
-                alert('Please select a due date.');
-                return;
-            }
-
-            // Validate that due date is not in the past
-            const selectedDate = new Date(dueDate);
-            const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
-            if (selectedDate < currentDate) {
-                alert('Due date cannot be in the past.');
-                return;
-            }
-
-            if (!category) {
-                alert('Please select a category.');
-                return;
-            }
-
-            // Create new bill object
-            const newBill = {
-                id: Date.now(),
-                name: billName,
-                amount: billAmount,
-                dueDate: dueDate,
-                category: category,
-                autoPay: autoPay,
-                status: 'pending'
-            };
-
-            // Add to bills array
-            bills.push(newBill);
-
-            // Update UI
-            updateBillHistory();
-            initializeCalendar();
-            updateUpcomingBills();
-
-            // Clear form
-            billForm.reset();
-            // Reset minimum date after form reset
-            dueDateInput.min = today;
+        billForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            formData.append('type', 'bill');
+            
+            fetch('../controller/billRemindersDB.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('success', data.message);
+                    this.reset();
+                    loadBills();
+                } else {
+                    const errors = Array.isArray(data.errors) ? data.errors.join('<br>') : data.message;
+                    showMessage('error', errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while saving the bill reminder');
+            });
         });
     }
 
@@ -168,8 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear table
         tableBody.innerHTML = '';
 
-        // Sort bills by due date
-        const sortedBills = [...bills].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        // Sort bills by due date (most recent first)
+        const sortedBills = [...bills].sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
 
         // Add bills to table
         sortedBills.forEach(bill => {
@@ -183,24 +160,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
             row.innerHTML = `
                 <td>${bill.name}</td>
-                <td>$${bill.amount.toFixed(2)}</td>
+                <td>$${parseFloat(bill.amount).toFixed(2)}</td>
                 <td>${formattedDate}</td>
                 <td>${bill.category}</td>
                 <td>
-                    <select class="status-select" onchange="updateBillStatus(${bill.id}, this.value)">
-                        <option value="pending" ${bill.status === 'pending' ? 'selected' : ''}>Pending</option>
-                        <option value="paid" ${bill.status === 'paid' ? 'selected' : ''}>Paid</option>
-                        <option value="overdue" ${bill.status === 'overdue' ? 'selected' : ''}>Overdue</option>
-                    </select>
-                </td>
-                <td>
-                    <button class="action-btn delete-btn" onclick="deleteBill(${bill.id})">Delete</button>
+                    <button onclick="deleteBill(${bill.id})" class="action-btn delete-btn">
+                        <i data-feather="trash-2"></i>
+                    </button>
                 </td>
             `;
             tableBody.appendChild(row);
         });
 
-        // Update upcoming bills after updating the table
+        // Re-initialize Feather icons
+        if (window.feather) {
+            feather.replace();
+        }
+
+        // Update upcoming bills count
         updateUpcomingBills();
     }
 
@@ -210,113 +187,61 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!upcomingBillsElement) return;
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        today.setHours(0, 0, 0, 0);
 
-        // Filter bills that are due in the future and are pending
         const upcomingBillsList = bills.filter(bill => {
             const dueDate = new Date(bill.dueDate);
-            dueDate.setHours(0, 0, 0, 0); // Reset time to start of day
-            return dueDate >= today && bill.status === 'pending';
+            dueDate.setHours(0, 0, 0, 0);
+            return dueDate >= today;
         });
 
-        upcomingBills = upcomingBillsList.length;
-        upcomingBillsElement.textContent = `Upcoming Bills: ${upcomingBills}`;
+        upcomingBillsElement.textContent = `Upcoming Bills: ${upcomingBillsList.length}`;
+    }
 
-        // Remove any existing alerts
-        const existingAlerts = document.querySelectorAll('.alert');
-        existingAlerts.forEach(alert => alert.remove());
+    // Show message
+    function showMessage(type, message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        messageDiv.textContent = message;
+        
+        const container = document.querySelector('#addBill');
+        if (container) {
+            // Remove any existing messages
+            const existingMessages = container.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            container.insertBefore(messageDiv, container.firstChild);
 
-        // Show alert only if there are upcoming bills
-        if (upcomingBills > 0) {
-            showAlert(`You have ${upcomingBills} bill${upcomingBills > 1 ? 's' : ''} due!`, 'warning');
+            setTimeout(() => {
+                if (messageDiv.parentElement) {
+                    messageDiv.remove();
+                }
+            }, 5000);
         }
     }
 
-    // Show alert
-    function showAlert(message, type) {
-        const alertContainer = document.createElement('div');
-        alertContainer.className = `alert alert-${type}`;
-        alertContainer.innerHTML = `
-            <i data-feather="${type === 'warning' ? 'alert-triangle' : 'alert-circle'}"></i>
-            <span>${message}</span>
-        `;
-
-        const mainContent = document.querySelector('.main-content');
-        mainContent.insertBefore(alertContainer, mainContent.firstChild);
-
-        // Initialize Feather icon
-        if (window.feather) feather.replace();
-
-        // Remove alert after 5 seconds
-        setTimeout(() => {
-            alertContainer.remove();
-        }, 5000);
-    }
-
-    // Make functions available globally
-    window.updateBillStatus = function(billId, newStatus) {
-        const bill = bills.find(b => b.id === billId);
-        if (bill) {
-            bill.status = newStatus;
-            if (newStatus === 'paid') {
-                bill.paymentDate = new Date().toISOString();
-            }
-            updateBillHistory();
-            initializeCalendar();
-            updateUpcomingBills();
-        }
-    };
-
+    // Delete bill
     window.deleteBill = function(billId) {
-        if (confirm('Are you sure you want to delete this bill?')) {
-            bills = bills.filter(b => b.id !== billId);
-            updateBillHistory();
-            initializeCalendar();
-            updateUpcomingBills();
-        }
-    };
-
-    window.filterBills = function() {
-        const statusFilter = document.getElementById('statusFilter').value;
-        const tableBody = document.getElementById('billHistoryTableBody');
-        if (!tableBody) return;
-
-        const rows = tableBody.getElementsByTagName('tr');
-        for (let row of rows) {
-            const statusSelect = row.querySelector('.status-select');
-            if (statusFilter === 'all' || statusSelect.value === statusFilter) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        }
-    };
-
-    // Check for overdue bills
-    function checkOverdueBills() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to start of day
-        const overdueBills = bills.filter(bill => {
-            const dueDate = new Date(bill.dueDate);
-            dueDate.setHours(0, 0, 0, 0); // Reset time to start of day
-            return dueDate < today && bill.status === 'pending';
-        });
-
-        if (overdueBills.length > 0) {
-            overdueBills.forEach(bill => {
-                bill.status = 'overdue';
+        if (confirm('Are you sure you want to delete this bill reminder?')) {
+            fetch(`../controller/billRemindersDB.php?type=bill&id=${billId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('success', data.message);
+                    loadBills();
+                } else {
+                    showMessage('error', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while deleting the bill reminder');
             });
-            updateBillHistory();
-            showAlert(`You have ${overdueBills.length} overdue bills!`, 'danger');
         }
-    }
+    };
 
     // Initialize everything
-    initializeCalendar();
-    updateBillHistory();
-    updateUpcomingBills();
-    checkOverdueBills();
-
-    // Check for overdue bills every hour
-    setInterval(checkOverdueBills, 3600000);
+    loadBills();
 });
