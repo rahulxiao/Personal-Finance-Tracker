@@ -1,43 +1,15 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        require_once('../controller/expenseCheck.php');
+        
         $errors = [];
         $success = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (empty($_POST['expenseAmount'])) {
-                $errors[] = "Expense amount is required";
-            } elseif (!is_numeric($_POST['expenseAmount']) || $_POST['expenseAmount'] <= 0) {
-                $errors[] = "Expense amount must be a positive number";
-            }
-
-            if (empty($_POST['category'])) {
-                $errors[] = "Category is required";
-            } elseif (!in_array($_POST['category'], ['Food & Dining', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Shopping', 'Healthcare', 'Education', 'Personal Care', 'Other'])) {
-                $errors[] = "Invalid category selected";
-            }
-
-            if (empty($_POST['description'])) {
-                $errors[] = "Description is required";
-            } elseif (strlen($_POST['description']) > 200) {
-                $errors[] = "Description must be less than 200 characters";
-            }
-
-            if (empty($_POST['expenseDate'])) {
-                $errors[] = "Expense date is required";
-            } else {
-                $expenseDate = strtotime($_POST['expenseDate']);
-                if ($expenseDate === false) {
-                    $errors[] = "Invalid date format";
-                } elseif ($expenseDate > strtotime('today')) {
-                    $errors[] = "Expense date cannot be in the future";
-                }
-            }
-
-            if (empty($errors)) {
-                $success = true;
-         
-            }
+            $validationResult = validateExpense($_POST);
+            $errors = $validationResult['errors'];
+            $success = $validationResult['success'];
         }
 ?>
 
@@ -162,6 +134,7 @@
                 <?php endif; ?>
 
                 <form id="expenseForm" action="../controller/expenseDB.php" method="POST">
+                    <input type="hidden" name="type" value="expense" />
                     <input type="number" id="expense" name="expenseAmount" min= "0.01" placeholder="Amount" step="0.01" required />
                     <select id="category" name="category" required>
                         <option value="">Select Category</option>
