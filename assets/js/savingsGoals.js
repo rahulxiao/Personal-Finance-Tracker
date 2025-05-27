@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // target amount and current amount error handling for invalid amounts
+    // target amount and current amount error handling
     const targetAmountInput = document.getElementById('targetAmount');
     const currentAmountInput = document.getElementById('currentAmount');
     const monthlyContributionInput = document.getElementById('monthlyContribution');
@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
         currentAmountInput.addEventListener('input', function() {
             const targetAmount = parseFloat(targetAmountInput.value) || 0;
             const currentAmount = parseFloat(this.value) || 0;
-            const monthlyContribution = parseFloat(monthlyContributionInput.value) || 0;
 
             if (currentAmount > targetAmount) {
                 showError(this, 'Current amount cannot be higher than target amount');
@@ -99,32 +98,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
         monthlyContributionInput.addEventListener('input', function() {
             const targetAmount = parseFloat(targetAmountInput.value) || 0;
-            const currentAmount = parseFloat(currentAmountInput.value) || 0;
             const monthlyContribution = parseFloat(this.value) || 0;
 
             if (monthlyContribution > targetAmount) {
                 showError(this, 'Monthly contribution cannot be higher than target amount');
-            
             } else {
                 clearError(this);
             }
         });
     }
 
-    // loading goals from localStorage
+    // loading goals from database
     function loadGoals() {
-        const savedGoals = localStorage.getItem('savingsGoals');
-        if (savedGoals) {
-            goals = JSON.parse(savedGoals);
-            updateGoalsGrid();
-            updateStats();
-            updateMilestones();
-        }
+        fetch('../controller/savingsGoalsDB.php?type=savingsGoals')
+            .then(response => response.json())
+            .then(data => {
+                goals = data;
+                updateGoalsGrid();
+                updateStats();
+                updateMilestones();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'Failed to load savings goals');
+            });
     }
 
-    // saving goals to localStorage
-    function saveGoals() {
-        localStorage.setItem('savingsGoals', JSON.stringify(goals));
+    // show message
+    function showMessage(type, text) {
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `message ${type}-message`;
+        messageContainer.textContent = text;
+        
+        const container = document.querySelector('.goal-container');
+        if (container) {
+            container.insertBefore(messageContainer, container.firstChild);
+            
+            setTimeout(() => {
+                messageContainer.remove();
+            }, 5000);
+        }
     }
 
     // updating goals grid
@@ -151,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="goal-details">
                     <div class="goal-detail">
-                        <span>Current:</span> $${goal.currentAmount.toFixed(2)}
+                        <span>Current:</span> $${parseFloat(goal.currentAmount).toFixed(2)}
                     </div>
                     <div class="goal-detail">
-                        <span>Target:</span> $${goal.targetAmount.toFixed(2)}
+                        <span>Target:</span> $${parseFloat(goal.targetAmount).toFixed(2)}
                     </div>
                     <div class="goal-detail">
                         <span>Remaining:</span> $${remainingAmount.toFixed(2)}
@@ -188,12 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (totalSaved) {
-            const total = goals.reduce((sum, goal) => sum + goal.currentAmount, 0);
+            const total = goals.reduce((sum, goal) => sum + parseFloat(goal.currentAmount), 0);
             totalSaved.textContent = `$${total.toFixed(2)}`;
         }
 
         if (completedGoals) {
-            const completed = goals.filter(goal => goal.currentAmount >= goal.targetAmount).length;
+            const completed = goals.filter(goal => parseFloat(goal.currentAmount) >= parseFloat(goal.targetAmount)).length;
             completedGoals.textContent = completed;
         }
     }
@@ -207,13 +220,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // sorting goals by progress
         const sortedGoals = [...goals].sort((a, b) => {
-            const progressA = a.currentAmount / a.targetAmount;
-            const progressB = b.currentAmount / b.targetAmount;
+            const progressA = parseFloat(a.currentAmount) / parseFloat(a.targetAmount);
+            const progressB = parseFloat(b.currentAmount) / parseFloat(b.targetAmount);
             return progressB - progressA;
         });
 
         sortedGoals.forEach(goal => {
-            const progress = (goal.currentAmount / goal.targetAmount) * 100;
+            const progress = (parseFloat(goal.currentAmount) / parseFloat(goal.targetAmount)) * 100;
             const milestoneCard = document.createElement('div');
             milestoneCard.className = 'milestone-card';
             milestoneCard.innerHTML = `
@@ -263,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('celebrationModal');
         const message = document.getElementById('celebrationMessage');
         if (modal && message) {
-            message.textContent = `Congratulations! You've reached your goal of saving $${goal.targetAmount.toFixed(2)} for ${goal.name}!`;
+            message.textContent = `Congratulations! You've reached your goal of saving $${parseFloat(goal.targetAmount).toFixed(2)} for ${goal.name}!`;
             modal.style.display = 'flex';
         }
     }
@@ -287,61 +300,78 @@ document.addEventListener('DOMContentLoaded', function() {
             const monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value);
             const targetDate = new Date(document.getElementById('targetDate').value);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time
+            today.setHours(0, 0, 0, 0);
 
             if (targetDate < today) {
                 showError(targetDateInput, 'Target date cannot be in the past');
                 return;
             }
 
-            // Validate current amount against target amount
             if (currentAmount > targetAmount) {
-                showError(currentAmountInput, 'Current amount cannot be higher than target amount to set a goal');
+                showError(currentAmountInput, 'Current amount cannot be higher than target amount');
                 return;
             }
 
-            // Validate monthly contribution
             if (monthlyContribution > targetAmount) {
                 showError(monthlyContributionInput, 'Monthly contribution cannot be higher than target amount');
                 return;
             }
-            
 
-            const newGoal = {
-                id: Date.now(),
-                name: document.getElementById('goalName').value,
-                targetAmount: targetAmount,
-                currentAmount: currentAmount,
-                targetDate: document.getElementById('targetDate').value,
-                category: document.getElementById('category').value,
-                monthlyContribution: monthlyContribution
-            };
+            const formData = new FormData();
+            formData.append('type', 'savingsGoal');
+            formData.append('goalName', document.getElementById('goalName').value);
+            formData.append('targetAmount', targetAmount);
+            formData.append('currentAmount', currentAmount);
+            formData.append('targetDate', document.getElementById('targetDate').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('monthlyContribution', monthlyContribution);
 
-            goals.push(newGoal);
-            saveGoals();
-            updateGoalsGrid();
-            updateStats();
-            updateMilestones();
+            fetch('../controller/savingsGoalsDB.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadGoals();
+                    showMessage('success', data.message);
+                    addGoalForm.reset();
+                    hideAddGoalModal();
 
-            // Check if goal is already achieved
-            if (newGoal.currentAmount >= newGoal.targetAmount) {
-                showCelebrationModal(newGoal);
-            }
-
-            // Reset form and hide modal
-            addGoalForm.reset();
-            hideAddGoalModal();
+                    if (currentAmount >= targetAmount) {
+                        showCelebrationModal(data.goal);
+                    }
+                } else {
+                    const errors = Array.isArray(data.errors) ? data.errors.join('<br>') : data.message;
+                    showMessage('error', errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while saving the goal');
+            });
         });
     }
 
     // deleting goal
     window.deleteGoal = function(goalId) {
         if (confirm('Are you sure you want to delete this goal?')) {
-            goals = goals.filter(g => g.id !== goalId);
-            saveGoals();
-            updateGoalsGrid();
-            updateStats();
-            updateMilestones();
+            fetch(`../controller/savingsGoalsDB.php?type=savingsGoal&id=${goalId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadGoals();
+                    showMessage('success', data.message);
+                } else {
+                    showMessage('error', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while deleting the goal');
+            });
         }
     };
 

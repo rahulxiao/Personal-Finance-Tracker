@@ -1,63 +1,15 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        require_once('../controller/savingsGoalsCheck.php');
+        
         $errors = [];
         $success = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Validate goal name
-            if (empty($_POST['goalName'])) {
-                $errors[] = "Goal name is required";
-            } elseif (strlen($_POST['goalName']) > 100) {
-                $errors[] = "Goal name must be less than 100 characters";
-            }
-
-            // Validate target amount
-            if (empty($_POST['targetAmount'])) {
-                $errors[] = "Target amount is required";
-            } elseif (!is_numeric($_POST['targetAmount']) || $_POST['targetAmount'] <= 0) {
-                $errors[] = "Target amount must be a positive number";
-            }
-
-            // Validate current amount
-            if (empty($_POST['currentAmount'])) {
-                $errors[] = "Current amount is required";
-            } elseif (!is_numeric($_POST['currentAmount']) || $_POST['currentAmount'] < 0) {
-                $errors[] = "Current amount must be a non-negative number";
-            }
-
-            // Validate target date
-            if (empty($_POST['targetDate'])) {
-                $errors[] = "Target date is required";
-            } else {
-                $targetDate = strtotime($_POST['targetDate']);
-                if ($targetDate === false) {
-                    $errors[] = "Invalid target date format";
-                } elseif ($targetDate < strtotime('today')) {
-                    $errors[] = "Target date cannot be in the past";
-                }
-            }
-
-            // Validate category
-            if (empty($_POST['category'])) {
-                $errors[] = "Category is required";
-            } elseif (!in_array($_POST['category'], ['Emergency Fund', 'Vacation', 'Home', 'Car', 'Education', 'Retirement', 'Other'])) {
-                $errors[] = "Invalid category selected";
-            }
-
-            // Validate monthly contribution
-            if (empty($_POST['monthlyContribution'])) {
-                $errors[] = "Monthly contribution is required";
-            } elseif (!is_numeric($_POST['monthlyContribution']) || $_POST['monthlyContribution'] <= 0) {
-                $errors[] = "Monthly contribution must be a positive number";
-            }
-
-            // If no errors, process the form
-            if (empty($errors)) {
-                $success = true;
-                // Here you would typically save to database
-                // For now, we'll just show success message
-            }
+            $validationResult = validateSavingsGoal($_POST);
+            $errors = $validationResult['errors'];
+            $success = $validationResult['success'];
         }
 ?>
 <!DOCTYPE html>
