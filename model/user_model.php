@@ -155,7 +155,6 @@ function updateUser($userData) {
     return $success ? "success" : "fail";
 }
 
-// Function to delete a user by ID
 function deleteUser($id) {
     $con = getConnection();
     

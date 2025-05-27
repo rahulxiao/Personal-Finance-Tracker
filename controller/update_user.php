@@ -2,7 +2,7 @@
 session_start();
 require_once '../model/user_model.php'; // Adjust path as needed
 
-header('Content-Type: application/json'); // Ensure the response is JSON
+header('Content-Type: application/x-www-form-urlencoded'); // Ensure the response is JSON
 
 
 // Check if all required fields are set in $_POST for update

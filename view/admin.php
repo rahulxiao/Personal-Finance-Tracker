@@ -413,7 +413,7 @@
                 editLastName.value = user.data.u_lname;
                 editUsername.value = user.data.u_username;
                 editEmail.value = user.data.u_email;
-                editPassword.value = ''; // Always clear password field for security
+                editPassword.value = ''; 
                 editRole.value = user.data.role || 'user';
                 editStatus.value = user.data.status || 'active';
 
@@ -464,13 +464,11 @@
         };
       }
 
-      // Edit User Form Submission via AJAX (using XMLHttpRequest)
       editUserForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const formData = new FormData(editUserForm);
         
-        // Remove password from formData if it's empty, so it's not sent
         if (formData.get('password') === '') {
             formData.delete('password');
         }
@@ -489,7 +487,7 @@
               let data = JSON.parse(this.responseText);
               if (data.success) {
                 alert(data.message);
-                editUserModal.classList.remove('active'); // Close modal
+                editUserModal.classList.remove('active'); 
                 fetchAndDisplayUsers(); // Refresh user list
               } else {
                 alert('Error updating user: ' + data.message);

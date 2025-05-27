@@ -1,7 +1,7 @@
 <?php
 require_once '../model/db.php'; // Make sure this path is correct for your db connection
 
-header('Content-Type: application/json'); // Set header to indicate JSON response
+header('Content-Type: application/x-www-form-urlencoded'); // Set header to indicate JSON response
 
 function getUsers($searchTerm = '') {
     $con = getConnection();
