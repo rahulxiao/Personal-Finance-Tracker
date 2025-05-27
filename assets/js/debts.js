@@ -13,38 +13,137 @@ document.addEventListener('DOMContentLoaded', function () {
     const grandTotalDebtElem = document.getElementById('grandTotalDebt');
     let grandTotalDebt = 0;
 
+    // Load existing debts from database
+    function loadDebts() {
+        fetch('../controller/debtsDB.php?type=debts')
+            .then(response => response.json())
+            .then(debts => {
+                debtsTableBody.innerHTML = '';
+                grandTotalDebt = 0;
+                
+                debts.forEach(debt => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${debt.source}</td>
+                        <td>$${parseFloat(debt.amount).toFixed(2)}</td>
+                        <td>${parseFloat(debt.interest).toFixed(2)}</td>
+                        <td>$${parseFloat(debt.monthlyPayment).toFixed(2)}</td>
+                        <td style="display: flex; gap: 8px; align-items: center;">
+                            <button class="btn-primary payoff-btn">Calculate Payoff</button>
+                            <button class="action-btn delete-btn">
+                                <i data-feather="trash-2"></i>
+                            </button>
+                        </td>
+                    `;
+
+                    // Add event listener for payoff button
+                    row.querySelector('.payoff-btn').onclick = function() {
+                        showPayoffModal(
+                            parseFloat(debt.amount),
+                            parseFloat(debt.interest),
+                            parseFloat(debt.monthlyPayment)
+                        );
+                    };
+
+                    // Add event listener for delete button
+                    row.querySelector('.delete-btn').onclick = function() {
+                        deleteDebt(debt.id, row, parseFloat(debt.amount), parseFloat(debt.interest));
+                    };
+
+                    debtsTableBody.appendChild(row);
+                    
+                    // Calculate total repayment for this debt
+                    const result = calculatePayoff(
+                        parseFloat(debt.amount),
+                        parseFloat(debt.interest),
+                        parseFloat(debt.monthlyPayment)
+                    );
+                    grandTotalDebt += result.totalAmount;
+
+                    // Initialize Feather icons for the new row
+                    if (window.feather) {
+                        feather.replace();
+                    }
+                });
+                
+                updateGrandTotalDebt();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while loading debts');
+            });
+    }
+
     function calculatePayoff(principal, annualRate, monthlyPayment) {
         const monthlyRate = annualRate / 100 / 12;
         let balance = principal;
         let totalInterest = 0;
         let months = 0;
+        
         if (monthlyPayment <= balance * monthlyRate) {
             return {
                 payoffTime: 'Monthly payment is too low to ever pay off this loan.',
-                totalInterest: '',
-                totalRepayment: ''
+                totalInterest: 0,
+                totalAmount: principal
             };
         }
+        
         while (balance > 0) {
             let interest = balance * monthlyRate;
             let principalPaid = monthlyPayment - interest;
+            
             if (principalPaid > balance) {
                 principalPaid = balance;
                 interest = balance * monthlyRate;
             }
+            
             balance -= principalPaid;
             totalInterest += interest;
             months++;
+            
             if (months > 1000) break;
         }
-        const totalRepayment = principal + totalInterest;
+        
+        const totalAmount = principal + totalInterest;
         const years = Math.floor(months / 12);
         const remMonths = months % 12;
+        
         return {
             payoffTime: `Payoff Time: ${years > 0 ? years + ' years ' : ''}${remMonths} months`,
             totalInterest: `Total Interest Paid: $${totalInterest.toFixed(2)}`,
-            totalRepayment: `Total Repayment: $${totalRepayment.toFixed(2)}`
+            totalRepayment: `Total Repayment: $${totalAmount.toFixed(2)}`,
+            totalAmount: totalAmount
         };
+    }
+
+    function deleteDebt(id, row, amount, interestRate) {
+        if (confirm('Are you sure you want to delete this debt?')) {
+            fetch(`../controller/debtsDB.php?type=debt&id=${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Calculate and subtract the total repayment amount
+                    const result = calculatePayoff(
+                        amount,
+                        interestRate,
+                        parseFloat(row.children[3].textContent.slice(1))
+                    );
+                    grandTotalDebt -= result.totalAmount;
+                    
+                    updateGrandTotalDebt();
+                    row.remove();
+                    showMessage('success', 'Debt deleted successfully');
+                } else {
+                    showMessage('error', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while deleting the debt');
+            });
+        }
     }
 
     function showPayoffModal(principal, annualRate, monthlyPayment) {
@@ -60,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             payoffModal.style.display = 'none';
         };
     }
+
     window.onclick = function(event) {
         if (event.target === payoffModal) {
             payoffModal.style.display = 'none';
@@ -72,65 +172,57 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function showMessage(type, message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        messageDiv.textContent = message;
+        
+        const container = document.querySelector('#addDebt');
+        if (container) {
+            // Remove any existing messages
+            const existingMessages = container.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            container.insertBefore(messageDiv, container.firstChild);
+
+            setTimeout(() => {
+                if (messageDiv.parentElement) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+    }
+
     if (form) {
         form.addEventListener('submit', function (event) {
             event.preventDefault();
-            const source = debtSourceInput.value.trim();
-            const principal = parseFloat(loanAmountInput.value);
-            const annualRate = parseFloat(interestRateInput.value);
-            const monthlyPayment = parseFloat(monthlyPaymentInput.value);
-            if (!source) {
-                alert('Please enter the debt source.');
-                debtSourceInput.focus();
-                return;
-            }
-            if (isNaN(principal) || principal <= 0) {
-                alert('Please enter a valid loan amount.');
-                loanAmountInput.focus();
-                return;
-            }
-            if (isNaN(annualRate) || annualRate < 0) {
-                alert('Please enter a valid interest rate.');
-                interestRateInput.focus();
-                return;
-            }
-            if (isNaN(monthlyPayment) || monthlyPayment <= 0) {
-                alert('Please enter a valid monthly payment.');
-                monthlyPaymentInput.focus();
-                return;
-            }
-            // Add to table
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${source}</td>
-                <td>$${principal.toFixed(2)}</td>
-                <td>${annualRate.toFixed(2)}</td>
-                <td>$${monthlyPayment.toFixed(2)}</td>
-                <td>
-                    <button class="btn-primary payoff-btn">Calculate Payoff</button>
-                    <button class="btn-primary clear-btn" style="margin-left:8px;background:var(--error-color);color:#fff;">Clear</button>
-                </td>
-            `;
-            // Add event listener for this row's payoff button
-            newRow.querySelector('.payoff-btn').onclick = function() {
-                showPayoffModal(principal, annualRate, monthlyPayment);
-            };
-            // Add event listener for clear button
-            newRow.querySelector('.clear-btn').onclick = function() {
-                grandTotalDebt -= principal;
-                updateGrandTotalDebt();
-                newRow.remove();
-            };
-            debtsTableBody.appendChild(newRow);
-            // Update grand total
-            grandTotalDebt += principal;
-            updateGrandTotalDebt();
-            // Clear form
-            debtSourceInput.value = '';
-            loanAmountInput.value = '';
-            interestRateInput.value = '';
-            monthlyPaymentInput.value = '';
-            debtSourceInput.focus();
+            
+            const formData = new FormData();
+            formData.append('type', 'debt');
+            formData.append('debtSource', debtSourceInput.value.trim());
+            formData.append('loanAmount', loanAmountInput.value);
+            formData.append('interestRate', interestRateInput.value);
+            formData.append('monthlyPayment', monthlyPaymentInput.value);
+
+            fetch('../controller/debtsDB.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('success', data.message);
+                    loadDebts(); // Reload the table
+                    form.reset();
+                } else {
+                    const errors = Array.isArray(data.errors) ? data.errors.join('<br>') : data.message;
+                    showMessage('error', errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('error', 'An error occurred while saving the debt');
+            });
         });
     }
 
@@ -141,4 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const options = { year: "numeric", month: "long", day: "numeric" };
         currentDateElement.textContent = now.toLocaleDateString("en-US", options);
     }
+
+    // Load existing debts when the page loads
+    loadDebts();
 });

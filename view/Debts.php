@@ -1,40 +1,15 @@
 <?php
     session_start();
     if(isset($_SESSION['status'])){
+        require_once('../controller/debtsCheck.php');
+        
         $errors = [];
         $success = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (empty($_POST['debtSource'])) {
-                $errors[] = "Debt source is required";
-            } elseif (strlen($_POST['debtSource']) > 100) {
-                $errors[] = "Debt source must be less than 100 characters";
-            }
-
-            if (empty($_POST['loanAmount'])) {
-                $errors[] = "Loan amount is required";
-            } elseif (!is_numeric($_POST['loanAmount']) || $_POST['loanAmount'] <= 0) {
-                $errors[] = "Loan amount must be a positive number";
-            }
-
-            // Validate interest rate
-            if (empty($_POST['interestRate'])) {
-                $errors[] = "Interest rate is required";
-            } elseif (!is_numeric($_POST['interestRate']) || $_POST['interestRate'] < 0) {
-                $errors[] = "Interest rate must be a non-negative number";
-            }
-
-            if (empty($_POST['monthlyPayment'])) {
-                $errors[] = "Monthly payment is required";
-            } elseif (!is_numeric($_POST['monthlyPayment']) || $_POST['monthlyPayment'] <= 0) {
-                $errors[] = "Monthly payment must be a positive number";
-            }
-
-            
-            if (empty($errors)) {
-                $success = true;
-            
-            }
+            $validationResult = validateDebt($_POST);
+            $errors = $validationResult['errors'];
+            $success = $validationResult['success'];
         }
 ?>
 
@@ -83,20 +58,20 @@
             </div>
             <div id="addDebt">
                 <?php if (!empty($errors)): ?>
-                    <div class="error-messages">
+                    <div class="message error-message">
                         <?php foreach ($errors as $error): ?>
-                            <p class="error"><?php echo htmlspecialchars($error); ?></p>
+                            <?php echo htmlspecialchars($error); ?><br>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($success): ?>
-                    <div class="success-message">
-                        <p>Debt added successfully!</p>
+                    <div class="message success-message">
+                        Debt added successfully!
                     </div>
                 <?php endif; ?>
 
-                <form id="debtForm">
+                <form id="debtForm" action="../controller/debtsDB.php" method="POST">
                     <input type="text" id="debtSource" name="debtSource" placeholder="Debt Source" required />
                     <input type="number" id="loanAmount" name="loanAmount" placeholder="Loan Amount" min="0.01" step="0.01" required />
                     <input type="number" id="interestRate" name="interestRate" placeholder="Interest Rate (%)" min="0" step="0.01" required />
