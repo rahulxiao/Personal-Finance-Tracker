@@ -80,7 +80,6 @@ function addUser($userData) {
 }
 
 
-// Function to get all users, with optional search term
 function getAllUsers($searchTerm = '') {
     $con = getConnection();
     $users = [];
@@ -88,6 +87,8 @@ function getAllUsers($searchTerm = '') {
     $sql = "SELECT u_id, u_fname, u_lname, u_username, u_email FROM singup";
 
     if (!empty($searchTerm)) {
+        // Using prepared statements for security is highly recommended here to prevent SQL injection
+        $searchTerm = mysqli_real_escape_string($con, $searchTerm); // Basic sanitization for example
         $sql .= " WHERE u_fname LIKE '%$searchTerm%' OR u_lname LIKE '%$searchTerm%' OR u_username LIKE '%$searchTerm%' OR u_email LIKE '%$searchTerm%'";
     }
 
@@ -110,11 +111,14 @@ function getUserById($id) {
     $con = getConnection();
     $user = null;
 
-    $sql = "SELECT u_id, u_fname, u_lname, u_username, u_email FROM singup WHERE u_id = '$id'";
-    $result = mysqli_query($con, $sql);
+    // Sanitize input to prevent SQL injection
+    $id = mysqli_real_escape_string($con, $id);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
+    $sql = "SELECT u_id, u_fname, u_lname, u_username, u_email FROM singup WHERE u_id = '$id'"; //
+    $result = mysqli_query($con, $sql); //
+
+    if ($result && mysqli_num_rows($result) > 0) { //
+        $user = mysqli_fetch_assoc($result); //
         mysqli_free_result($result);
     } else {
         error_log("Error fetching single user: " . mysqli_error($con));
@@ -124,61 +128,61 @@ function getUserById($id) {
 }
 
 // Function to update user details
-function updateUser($userData) {
-    $con = getConnection();
+function updateUser($userData) { //
+    $con = getConnection(); //
 
-    $id      = $userData['user_id'];
-    $fname   = $userData['firstname'];
-    $lname   = $userData['lastname'];
-    $uname   = $userData['username'];
-    $email   = $userData['email'];
+    $id      = mysqli_real_escape_string($con, $userData['user_id']); //
+    $fname   = mysqli_real_escape_string($con, $userData['firstname']); //
+    $lname   = mysqli_real_escape_string($con, $userData['lastname']); //
+    $uname   = mysqli_real_escape_string($con, $userData['username']); //
+    $email   = mysqli_real_escape_string($con, $userData['email']); //
 
-    $sql = "UPDATE singup SET 
-                u_fname = '$fname', 
-                u_lname = '$lname', 
-                u_username = '$uname', 
-                u_email = '$email'";
-    
+    $sql = "UPDATE singup SET
+                u_fname = '$fname',
+                u_lname = '$lname',
+                u_username = '$uname',
+                u_email = '$email'"; //
+
     // Only update password if a new one is provided
-    if (isset($userData['password']) && !empty($userData['password'])) {
-        $pass = $userData['password']; // Remember to hash passwords!
-        $sql .= ", u_password = '$pass'";
-        $sql_login = "UPDATE login SET pass = '$pass' WHERE uname = '$uname'";
-        mysqli_query($con, $sql_login);
+    if (isset($userData['password']) && !empty($userData['password'])) { //
+        $pass = mysqli_real_escape_string($con, $userData['password']); // Remember to hash passwords!
+        $sql .= ", u_password = '$pass'"; //
+        $sql_login = "UPDATE login SET pass = '$pass' WHERE uname = '$uname'"; //
+        mysqli_query($con, $sql_login); //
     }
 
-    $sql .= " WHERE u_id = '$id'";
+    $sql .= " WHERE u_id = '$id'"; //
 
-    $success = mysqli_query($con, $sql);
-    mysqli_close($con);
+    $success = mysqli_query($con, $sql); //
+    mysqli_close($con); //
 
-    return $success ? "success" : "fail";
+    return $success ? "success" : "fail"; //
 }
 
-function deleteUser($id) {
-    $con = getConnection();
-    
+function deleteUser($id) { //
+    $con = getConnection(); //
+
     // Get username before deleting from singup, if needed for login table deletion
-    $uname_sql = "SELECT u_username FROM singup WHERE u_id = '$id'";
-    $uname_result = mysqli_query($con, $uname_sql);
-    $username_to_delete = null;
-    if ($uname_result && mysqli_num_rows($uname_result) > 0) {
-        $row = mysqli_fetch_assoc($uname_result);
-        $username_to_delete = $row['u_username'];
+    $uname_sql = "SELECT u_username FROM singup WHERE u_id = '$id'"; //
+    $uname_result = mysqli_query($con, $uname_sql); //
+    $username_to_delete = null; //
+    if ($uname_result && mysqli_num_rows($uname_result) > 0) { //
+        $row = mysqli_fetch_assoc($uname_result); //
+        $username_to_delete = $row['u_username']; //
     }
 
-    $sql_singup = "DELETE FROM singup WHERE u_id = '$id'";
-    $success_singup = mysqli_query($con, $sql_singup);
+    $sql_singup = "DELETE FROM singup WHERE u_id = '$id'"; //
+    $success_singup = mysqli_query($con, $sql_singup); //
 
-    $success_login = true;
-    if ($username_to_delete) {
-        $sql_login = "DELETE FROM login WHERE uname = '$username_to_delete'";
-        $success_login = mysqli_query($con, $sql_login);
+    $success_login = true; //
+    if ($username_to_delete) { //
+        $sql_login = "DELETE FROM login WHERE uname = '$username_to_delete'"; //
+        $success_login = mysqli_query($con, $sql_login); //
     }
 
-    mysqli_close($con);
+    mysqli_close($con); //
 
-    return ($success_singup && $success_login) ? "success" : "fail";
+    return ($success_singup && $success_login) ? "success" : "fail"; //
 }
 
 ?>

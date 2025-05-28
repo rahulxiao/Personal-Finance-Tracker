@@ -263,7 +263,7 @@
 
     // Add User Form Submission via AJAX (using XMLHttpRequest)
     document.getElementById('add-user-form').addEventListener('submit', (e) => {
-      e.preventDefault(); // Prevent default form submission
+      e.preventDefault(); 
 
       const form = e.target;
       const formData = new FormData(form);
