@@ -473,7 +473,6 @@
             formData.delete('password');
         }
 
-        // Convert FormData to URL-encoded string
         let params = new URLSearchParams(formData).toString();
 
         let xhttp = new XMLHttpRequest();
@@ -488,7 +487,7 @@
               if (data.success) {
                 alert(data.message);
                 editUserModal.classList.remove('active'); 
-                fetchAndDisplayUsers(); // Refresh user list
+                fetchAndDisplayUsers(); 
               } else {
                 alert('Error updating user: ' + data.message);
               }
@@ -504,7 +503,7 @@
       });
 
 
-      // Close Edit User Modal functionality
+      
       closeEditUserModal.addEventListener('click', () => {
         editUserModal.classList.remove('active');
       });
@@ -515,16 +514,13 @@
       });
 
 
-      // Initial load of users when the page loads
       fetchAndDisplayUsers();
 
-      // Event listener for the search button click
       searchButton.addEventListener('click', () => {
         const searchTerm = userSearchInput.value.trim();
         fetchAndDisplayUsers(searchTerm);
       });
 
-      // Optional: Event listener for real-time search as user types
       userSearchInput.addEventListener('keyup', (event) => {
         const searchTerm = userSearchInput.value.trim();
         fetchAndDisplayUsers(searchTerm);
