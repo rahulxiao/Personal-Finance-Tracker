@@ -2,8 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     feather.replace();
     updateCurrentDate();
-    initializeData();
-    updateDashboard();
+    loadAllTotals();
 });
 
 // Update current date display
@@ -13,58 +12,111 @@ function updateCurrentDate() {
     dateDisplay.textContent = new Date().toLocaleDateString('en-US', options);
 }
 
-// Sample data structure
-let dashboardData = {
-    income: [],
-    expenses: [],
-    debts: [],
-    savings: [],
-    bills: []
-};
+// Load all totals from different pages
+function loadAllTotals() {
+    // Load income total
+    fetch('../controller/incomeDB.php?type=paycheck')
+        .then(response => response.json())
+        .then(incomes => {
+            const paycheckTotal = incomes.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+            
+            // Load recurring income
+            fetch('../controller/incomeDB.php?type=recurring')
+                .then(response => response.json())
+                .then(recurringIncomes => {
+                    const recurringTotal = recurringIncomes.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                    
+                    // Load side hustle income
+                    fetch('../controller/incomeDB.php?type=sidehustle')
+                        .then(response => response.json())
+                        .then(sideHustleIncomes => {
+                            const sideHustleTotal = sideHustleIncomes.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                            
+                            // Calculate total income
+                            const totalIncome = paycheckTotal + recurringTotal + sideHustleTotal;
+                            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+                        });
+                });
+        });
 
-// Initialize with sample data
-function initializeData() {
-    // Sample income data
-    dashboardData.income = [
-        { id: 1, amount: 5000, description: 'Salary', date: '2024-03-15', category: 'Salary' },
-        { id: 2, amount: 200, description: 'Freelance Work', date: '2024-03-10', category: 'Freelance' }
-    ];
+    // Load expense total
+    fetch('../controller/expenseDB.php?type=expenses')
+        .then(response => response.json())
+        .then(expenses => {
+            const totalExpense = expenses.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+        });
 
-    // Sample expense data
-    dashboardData.expenses = [
-        { id: 1, amount: 1200, description: 'Rent', date: '2024-03-01', category: 'Housing' },
-        { id: 2, amount: 300, description: 'Groceries', date: '2024-03-05', category: 'Food' }
-    ];
+    // Load debt total
+    fetch('../controller/debtsDB.php?type=debts')
+        .then(response => response.json())
+        .then(debts => {
+            const totalDebt = debts.reduce((sum, debt) => {
+                const result = calculatePayoff(
+                    parseFloat(debt.amount),
+                    parseFloat(debt.interest),
+                    parseFloat(debt.monthlyPayment)
+                );
+                return sum + result.totalAmount;
+            }, 0);
+            document.getElementById('totalDebt').textContent = formatCurrency(totalDebt);
+        });
 
-    // Sample debt data
-    dashboardData.debts = [
-        { id: 1, amount: 15000, description: 'Student Loan', date: '2024-03-01', category: 'Education' },
-        { id: 2, amount: 5000, description: 'Car Loan', date: '2024-03-15', category: 'Vehicle' }
-    ];
+    // Load savings total
+    fetch('../controller/savingsGoalsDB.php?type=savingsGoals')
+        .then(response => response.json())
+        .then(goals => {
+            const totalSavings = goals.reduce((sum, goal) => sum + parseFloat(goal.currentAmount), 0);
+            document.getElementById('totalSavings').textContent = formatCurrency(totalSavings);
+        });
 
-    // Sample savings data
-    dashboardData.savings = [
-        { id: 1, amount: 5000, description: 'Emergency Fund', date: '2024-03-01', category: 'Emergency' },
-        { id: 2, amount: 2000, description: 'Vacation Fund', date: '2024-03-10', category: 'Travel' }
-    ];
-
-    // Sample bills data
-    dashboardData.bills = [
-        { id: 1, amount: 100, description: 'Electric Bill', date: '2024-03-20', category: 'Utilities' },
-        { id: 2, amount: 50, description: 'Internet Bill', date: '2024-03-25', category: 'Utilities' }
-    ];
+    // Load upcoming bills total
+    fetch('../controller/billRemindersDB.php?type=bills')
+        .then(response => response.json())
+        .then(bills => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const upcomingBillsTotal = bills
+                .filter(bill => new Date(bill.dueDate) >= today)
+                .reduce((sum, bill) => sum + parseFloat(bill.amount), 0);
+            
+            document.getElementById('upcomingBills').textContent = formatCurrency(upcomingBillsTotal);
+        });
 }
 
-// Calculate totals
-function calculateTotals() {
-    const totals = {
-        income: dashboardData.income.reduce((sum, item) => sum + item.amount, 0),
-        expenses: dashboardData.expenses.reduce((sum, item) => sum + item.amount, 0),
-        debts: dashboardData.debts.reduce((sum, item) => sum + item.amount, 0),
-        savings: dashboardData.savings.reduce((sum, item) => sum + item.amount, 0),
-        bills: dashboardData.bills.reduce((sum, item) => sum + item.amount, 0)
+// Calculate debt payoff
+function calculatePayoff(principal, annualRate, monthlyPayment) {
+    const monthlyRate = annualRate / 100 / 12;
+    let balance = principal;
+    let totalInterest = 0;
+    let months = 0;
+    
+    if (monthlyPayment <= balance * monthlyRate) {
+        return {
+            totalAmount: principal
+        };
+    }
+    
+    while (balance > 0) {
+        let interest = balance * monthlyRate;
+        let principalPaid = monthlyPayment - interest;
+        
+        if (principalPaid > balance) {
+            principalPaid = balance;
+            interest = balance * monthlyRate;
+        }
+        
+        balance -= principalPaid;
+        totalInterest += interest;
+        months++;
+        
+        if (months > 1000) break;
+    }
+    
+    return {
+        totalAmount: principal + totalInterest
     };
-    return totals;
 }
 
 // Format currency
@@ -75,64 +127,72 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-// Update dashboard display
-function updateDashboard() {
-    const totals = calculateTotals();
-
-    // Update summary cards
-    document.getElementById('totalIncome').textContent = formatCurrency(totals.income);
-    document.getElementById('totalExpense').textContent = formatCurrency(totals.expenses);
-    document.getElementById('totalDebt').textContent = formatCurrency(totals.debts);
-    document.getElementById('totalSavings').textContent = formatCurrency(totals.savings);
-    document.getElementById('upcomingBills').textContent = formatCurrency(totals.bills);
-
-    // Update recent activity
-    updateRecentActivity();
-}
-
-// Update recent activity section
+// Update recent activity
 function updateRecentActivity() {
     const activityList = document.getElementById('activityList');
-    activityList.innerHTML = '';
+    if (!activityList) return;
 
-    // Combine all activities
-    const allActivities = [
-        ...dashboardData.income.map(item => ({ ...item, type: 'income' })),
-        ...dashboardData.expenses.map(item => ({ ...item, type: 'expense' })),
-        ...dashboardData.debts.map(item => ({ ...item, type: 'debt' })),
-        ...dashboardData.savings.map(item => ({ ...item, type: 'savings' })),
-        ...dashboardData.bills.map(item => ({ ...item, type: 'bill' }))
-    ];
+    // Fetch all recent activities
+    Promise.all([
+        fetch('../controller/incomeDB.php?type=paycheck').then(r => r.json()),
+        fetch('../controller/expenseDB.php?type=expenses').then(r => r.json()),
+        fetch('../controller/debtsDB.php?type=debts').then(r => r.json()),
+        fetch('../controller/savingsGoalsDB.php?type=savingsGoals').then(r => r.json()),
+        fetch('../controller/billRemindersDB.php?type=bills').then(r => r.json())
+    ])
+    .then(([incomes, expenses, debts, savings, bills]) => {
+        // Combine all activities
+        const allActivities = [
+            ...incomes.map(item => ({ ...item, type: 'income', date: item.date })),
+            ...expenses.map(item => ({ ...item, type: 'expense', date: item.date })),
+            ...debts.map(item => ({ ...item, type: 'debt', date: item.date })),
+            ...savings.map(item => ({ ...item, type: 'savings', date: item.date })),
+            ...bills.map(item => ({ ...item, type: 'bill', date: item.dueDate }))
+        ];
 
-    // Sort by date (most recent first)
-    allActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Sort by date (most recent first)
+        allActivities.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Display last 5 activities
-    allActivities.slice(0, 5).forEach(activity => {
-        const activityItem = document.createElement('div');
-        activityItem.className = 'activity-item';
+        // Display last 5 activities
+        activityList.innerHTML = '';
+        allActivities.slice(0, 5).forEach(activity => {
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
 
-        const iconClass = getActivityIcon(activity.type);
-        const amountClass = activity.type === 'expense' || activity.type === 'bill' ? 'negative' : 'positive';
+            const iconClass = getActivityIcon(activity.type);
+            const amountClass = activity.type === 'expense' || activity.type === 'bill' ? 'negative' : 'positive';
+            const amount = activity.type === 'debt' ? 
+                calculatePayoff(
+                    parseFloat(activity.amount),
+                    parseFloat(activity.interest),
+                    parseFloat(activity.monthlyPayment)
+                ).totalAmount :
+                parseFloat(activity.amount);
 
-        activityItem.innerHTML = `
-            <div class="activity-icon ${activity.type}">
-                <i data-feather="${iconClass}"></i>
-            </div>
-            <div class="activity-details">
-                <div class="activity-title">${activity.description}</div>
-                <div class="activity-date">${formatDate(activity.date)}</div>
-            </div>
-            <div class="activity-amount ${amountClass}">
-                ${activity.type === 'expense' || activity.type === 'bill' ? '-' : '+'}${formatCurrency(activity.amount)}
-            </div>
-        `;
+            activityItem.innerHTML = `
+                <div class="activity-icon ${activity.type}">
+                    <i data-feather="${iconClass}"></i>
+                </div>
+                <div class="activity-details">
+                    <div class="activity-title">${activity.description || activity.name || activity.source}</div>
+                    <div class="activity-date">${formatDate(activity.date)}</div>
+                </div>
+                <div class="activity-amount ${amountClass}">
+                    ${activity.type === 'expense' || activity.type === 'bill' ? '-' : '+'}${formatCurrency(amount)}
+                </div>
+            `;
 
-        activityList.appendChild(activityItem);
+            activityList.appendChild(activityItem);
+        });
+
+        // Reinitialize Feather icons
+        if (window.feather) {
+            feather.replace();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading activities:', error);
     });
-
-    // Reinitialize Feather icons for new elements
-    feather.replace();
 }
 
 // Get appropriate icon for activity type
@@ -153,29 +213,5 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
-// Add new transaction
-function addTransaction(type, data) {
-    const newTransaction = {
-        id: Date.now(),
-        ...data,
-        date: new Date().toISOString().split('T')[0]
-    };
-
-    dashboardData[type].push(newTransaction);
-    updateDashboard();
-}
-
-// Remove transaction
-function removeTransaction(type, id) {
-    dashboardData[type] = dashboardData[type].filter(item => item.id !== id);
-    updateDashboard();
-}
-
-// Update transaction
-function updateTransaction(type, id, newData) {
-    const index = dashboardData[type].findIndex(item => item.id === id);
-    if (index !== -1) {
-        dashboardData[type][index] = { ...dashboardData[type][index], ...newData };
-        updateDashboard();
-    }
-} 
+// Initial load of recent activity
+updateRecentActivity(); 

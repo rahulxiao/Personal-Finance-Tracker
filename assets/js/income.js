@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
     window.recurringTotalIncome = 0;
     window.sideHustleTotalIncome = 0;
 
+    // Loading state management
+    function setLoadingState(isLoading, elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            if (isLoading) {
+                element.innerHTML = '<div class="loading-spinner"></div>';
+                element.classList.add('loading');
+            } else {
+                element.classList.remove('loading');
+            }
+        }
+    }
+
     function updateGrandTotalIncome() {
         const grandTotal = window.totalIncome + window.recurringTotalIncome + window.sideHustleTotalIncome;
         const grandTotalElem = document.getElementById('grandTotalIncome');
@@ -26,196 +39,228 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Load all income types
-    function loadAllIncomes() {
-        loadIncomes();
-        loadRecurringIncomes();
-        loadSideHustleIncomes();
+    async function loadAllIncomes() {
+        try {
+            setLoadingState(true, 'incomeTableBody');
+            setLoadingState(true, 'recurringIncomeTableBody');
+            setLoadingState(true, 'sideHustleIncomeTableBody');
+
+            await Promise.all([
+                loadIncomes(),
+                loadRecurringIncomes(),
+                loadSideHustleIncomes()
+            ]);
+        } catch (error) {
+            console.error('Error loading incomes:', error);
+            showMessage('error', 'Failed to load income data. Please try again.');
+        } finally {
+            setLoadingState(false, 'incomeTableBody');
+            setLoadingState(false, 'recurringIncomeTableBody');
+            setLoadingState(false, 'sideHustleIncomeTableBody');
+        }
     }
 
     // Paycheck income functions
-    function loadIncomes() {
-        fetch('../controller/incomeDB.php?type=paycheck')
-            .then(response => response.json())
-            .then(incomes => {
-                const tableBody = document.getElementById('incomeTableBody');
-                tableBody.innerHTML = '';
+    async function loadIncomes() {
+        try {
+            const response = await fetch('../controller/incomeDB.php?type=paycheck');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const incomes = await response.json();
+            
+            const tableBody = document.getElementById('incomeTableBody');
+            tableBody.innerHTML = '';
+            
+            window.totalIncome = 0;
+            
+            incomes.forEach(income => {
+                const row = document.createElement('tr');
+                const actionIcon = document.createElement('button');
+                actionIcon.className = 'action-icon delete-action';
+                actionIcon.setAttribute('title', 'Delete Income');
+                actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
                 
-                window.totalIncome = 0;
+                actionIcon.setAttribute('data-tooltip', 'Delete this income');
+                actionIcon.setAttribute('data-income-id', income.id);
                 
-                incomes.forEach(income => {
-                    const row = document.createElement('tr');
-                    const actionIcon = document.createElement('button');
-                    actionIcon.className = 'action-icon delete-action';
-                    actionIcon.setAttribute('title', 'Delete Income');
-                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
-                    
-                    actionIcon.setAttribute('data-tooltip', 'Delete this income');
-                    actionIcon.setAttribute('data-income-id', income.id);
-                    
-                    actionIcon.addEventListener('click', function() {
-                        handleDelete(income.id, income.source, 'paycheck');
-                    });
-
-                    row.innerHTML = `
-                        <td>${income.source}</td>
-                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
-                        <td>${formatDate(income.date)}</td>
-                        <td></td>
-                    `;
-                    row.cells[3].appendChild(actionIcon);
-                    tableBody.appendChild(row);
-                    
-                    window.totalIncome += parseFloat(income.amount);
+                actionIcon.addEventListener('click', function() {
+                    handleDelete(income.id, income.source, 'paycheck');
                 });
+
+                row.innerHTML = `
+                    <td>${income.source}</td>
+                    <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                    <td>${formatDate(income.date)}</td>
+                    <td></td>
+                `;
+                row.cells[3].appendChild(actionIcon);
+                tableBody.appendChild(row);
                 
-                document.getElementById('totalIncome').textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
-        updateGrandTotalIncome();
-                
-                if (window.feather) {
-                    feather.replace();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('error', 'An error occurred while loading incomes');
+                window.totalIncome += parseFloat(income.amount);
             });
+            
+            document.getElementById('totalIncome').textContent = `Total Paycheck: $${window.totalIncome.toFixed(2)}`;
+            updateGrandTotalIncome();
+            
+            if (window.feather) {
+                feather.replace();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('error', 'An error occurred while loading incomes');
+            throw error;
+        }
     }
 
     // Recurring income functions
-    function loadRecurringIncomes() {
-        fetch('../controller/incomeDB.php?type=recurring')
-            .then(response => response.json())
-            .then(incomes => {
-                const tableBody = document.getElementById('recurringIncomeTableBody');
-                tableBody.innerHTML = '';
+    async function loadRecurringIncomes() {
+        try {
+            const response = await fetch('../controller/incomeDB.php?type=recurring');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const incomes = await response.json();
+            
+            const tableBody = document.getElementById('recurringIncomeTableBody');
+            tableBody.innerHTML = '';
+            
+            window.recurringTotalIncome = 0;
+            
+            incomes.forEach(income => {
+                const row = document.createElement('tr');
+                const actionIcon = document.createElement('button');
+                actionIcon.className = 'action-icon delete-action';
+                actionIcon.setAttribute('title', 'Delete Recurring Income');
+                actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
                 
-                window.recurringTotalIncome = 0;
+                actionIcon.setAttribute('data-tooltip', 'Delete this recurring income');
+                actionIcon.setAttribute('data-income-id', income.id);
                 
-                incomes.forEach(income => {
-                    const row = document.createElement('tr');
-                    const actionIcon = document.createElement('button');
-                    actionIcon.className = 'action-icon delete-action';
-                    actionIcon.setAttribute('title', 'Delete Recurring Income');
-                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
-                    
-                    actionIcon.setAttribute('data-tooltip', 'Delete this recurring income');
-                    actionIcon.setAttribute('data-income-id', income.id);
-                    
-                    actionIcon.addEventListener('click', function() {
-                        handleDelete(income.id, income.source, 'recurring');
-                    });
-
-                    row.innerHTML = `
-                        <td>${income.source}</td>
-                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
-                        <td>${formatDate(income.date)}</td>
-                        <td></td>
-                    `;
-                    row.cells[3].appendChild(actionIcon);
-                    tableBody.appendChild(row);
-                    
-                    window.recurringTotalIncome += parseFloat(income.amount);
+                actionIcon.addEventListener('click', function() {
+                    handleDelete(income.id, income.source, 'recurring');
                 });
+
+                row.innerHTML = `
+                    <td>${income.source}</td>
+                    <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                    <td>${formatDate(income.date)}</td>
+                    <td></td>
+                `;
+                row.cells[3].appendChild(actionIcon);
+                tableBody.appendChild(row);
                 
-                document.getElementById('recurringTotalIncome').textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
-                updateGrandTotalIncome();
-                
-                if (window.feather) {
-                    feather.replace();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('error', 'An error occurred while loading recurring incomes');
+                window.recurringTotalIncome += parseFloat(income.amount);
             });
+            
+            document.getElementById('recurringTotalIncome').textContent = `Recurring Income: $${window.recurringTotalIncome.toFixed(2)}`;
+            updateGrandTotalIncome();
+            
+            if (window.feather) {
+                feather.replace();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('error', 'An error occurred while loading recurring incomes');
+            throw error;
+        }
     }
 
     // Side hustle income functions
-    function loadSideHustleIncomes() {
-        fetch('../controller/incomeDB.php?type=sidehustle')
-            .then(response => response.json())
-            .then(incomes => {
-                const tableBody = document.getElementById('sideHustleIncomeTableBody');
-                tableBody.innerHTML = '';
+    async function loadSideHustleIncomes() {
+        try {
+            const response = await fetch('../controller/incomeDB.php?type=sidehustle');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const incomes = await response.json();
+            
+            const tableBody = document.getElementById('sideHustleIncomeTableBody');
+            tableBody.innerHTML = '';
+            
+            window.sideHustleTotalIncome = 0;
+            
+            incomes.forEach(income => {
+                const row = document.createElement('tr');
+                const actionIcon = document.createElement('button');
+                actionIcon.className = 'action-icon delete-action';
+                actionIcon.setAttribute('title', 'Delete Side Hustle Income');
+                actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
                 
-                window.sideHustleTotalIncome = 0;
+                actionIcon.setAttribute('data-tooltip', 'Delete this side hustle income');
+                actionIcon.setAttribute('data-income-id', income.id);
                 
-                incomes.forEach(income => {
-                    const row = document.createElement('tr');
-                    const actionIcon = document.createElement('button');
-                    actionIcon.className = 'action-icon delete-action';
-                    actionIcon.setAttribute('title', 'Delete Side Hustle Income');
-                    actionIcon.innerHTML = '<i data-feather="trash-2"></i>';
-                    
-                    actionIcon.setAttribute('data-tooltip', 'Delete this side hustle income');
-                    actionIcon.setAttribute('data-income-id', income.id);
-                    
-                    actionIcon.addEventListener('click', function() {
-                        handleDelete(income.id, income.source, 'sidehustle');
-                    });
-
-                    row.innerHTML = `
-                        <td>${income.source}</td>
-                        <td>$${parseFloat(income.amount).toFixed(2)}</td>
-                        <td>${formatDate(income.date)}</td>
-                        <td></td>
-                    `;
-                    row.cells[3].appendChild(actionIcon);
-                    tableBody.appendChild(row);
-                    
-                    window.sideHustleTotalIncome += parseFloat(income.amount);
+                actionIcon.addEventListener('click', function() {
+                    handleDelete(income.id, income.source, 'sidehustle');
                 });
+
+                row.innerHTML = `
+                    <td>${income.source}</td>
+                    <td>$${parseFloat(income.amount).toFixed(2)}</td>
+                    <td>${formatDate(income.date)}</td>
+                    <td></td>
+                `;
+                row.cells[3].appendChild(actionIcon);
+                tableBody.appendChild(row);
                 
-                document.getElementById('sideHustleTotalIncome').textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
-        updateGrandTotalIncome();
-                
-                if (window.feather) {
-                    feather.replace();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('error', 'An error occurred while loading side hustle incomes');
+                window.sideHustleTotalIncome += parseFloat(income.amount);
             });
+            
+            document.getElementById('sideHustleTotalIncome').textContent = `Side Hustle Income: $${window.sideHustleTotalIncome.toFixed(2)}`;
+            updateGrandTotalIncome();
+            
+            if (window.feather) {
+                feather.replace();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('error', 'An error occurred while loading side hustle incomes');
+            throw error;
+        }
     }
 
     // Generic delete handler for all income types
-    function handleDelete(id, source, type) {
+    async function handleDelete(id, source, type) {
         const typeLabels = {
             'paycheck': 'paycheck',
             'recurring': 'recurring income',
             'sidehustle': 'side hustle income'
         };
         
-        if (confirm(`Are you sure you want to delete the ${typeLabels[type]} from ${source}?`)) {
-            fetch(`../controller/incomeDB.php?type=${type}&id=${id}`, {
-                method: 'DELETE'
-            })
-            .then(response => response.json())
-            .then(data => {
+        if (confirm(`Are you sure you want to delete the ${typeLabels[type]}?`)) {
+            try {
+                const response = await fetch(`../controller/incomeDB.php?type=${type}&id=${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
                 if (data.success) {
                     showMessage('success', data.message);
                     
                     // Reload the appropriate income type
                     switch(type) {
                         case 'paycheck':
-                            loadIncomes();
+                            await loadIncomes();
                             break;
                         case 'recurring':
-                            loadRecurringIncomes();
+                            await loadRecurringIncomes();
                             break;
                         case 'sidehustle':
-                            loadSideHustleIncomes();
+                            await loadSideHustleIncomes();
                             break;
                     }
                 } else {
                     showMessage('error', data.message || `Error deleting ${typeLabels[type]}`);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 showMessage('error', `An error occurred while deleting the ${typeLabels[type]}`);
-            });
+            }
         }
     }
 
@@ -228,13 +273,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!form) return;
 
         const sourceInput = form.querySelector('input[type="text"]');
+        const submitButton = form.querySelector('input[type="submit"]');
+        
         if (sourceInput) {
             sourceInput.addEventListener('input', function(e) {
                 this.value = this.value.replace(/[0-9]/g, '');
             });
         }
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const sourceValue = sourceInput.value.trim();
@@ -249,28 +296,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const formData = new FormData(this);
-            formData.append('type', type);
+            // Disable submit button and show loading state
+            submitButton.disabled = true;
+            submitButton.value = 'Adding...';
             
-            fetch('../controller/incomeDB.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const formData = new FormData(this);
+                formData.append('type', type);
+                
+                const response = await fetch('../controller/incomeDB.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
                 if (data.success) {
                     this.reset();
                     showMessage('success', data.message);
-                    loadAllIncomes();
+                    await loadAllIncomes();
                 } else {
                     const errors = Array.isArray(data.errors) ? data.errors.join('<br>') : data.message;
                     showMessage('error', errors);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 showMessage('error', 'An error occurred while saving the income');
-            });
+            } finally {
+                // Re-enable submit button and restore original text
+                submitButton.disabled = false;
+                submitButton.value = type === 'paycheck' ? 'Add Income' : 
+                                   type === 'recurring' ? 'Add Recurring Income' : 
+                                   'Add Side Hustle Income';
+            }
         });
     }
 
@@ -303,51 +365,4 @@ function showMessage(type, message) {
     setTimeout(() => {
         messageDiv.remove();
     }, 5000);
-}
-
-// Add animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeOut {
-        from { opacity: 1; transform: translateX(0); }
-        to { opacity: 0; transform: translateX(-20px); }
-    }
-    
-    .delete-action {
-        background: none;
-        border: none;
-        color: #dc3545;
-        cursor: pointer;
-        padding: 5px;
-        transition: color 0.3s ease;
-    }
-    
-    .delete-action:hover {
-        color: #c82333;
-    }
-    
-    .message {
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        animation: fadeIn 0.3s ease;
-    }
-    
-    .success-message {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    
-    .error-message {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-`;
-document.head.appendChild(style); 
+} 

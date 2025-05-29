@@ -258,14 +258,25 @@ body {
 }
 
 .delete-btn {
-    background-color: var(--error-color);
-    color: white;
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
 }
 
 .delete-btn:hover {
-    background-color: #dc2626;
+    color: #c82333;
 }
 
+.delete-btn i {
+    width: 16px;
+    height: 16px;
+}
 /* Add Category Section */
 .add-category-section {
     margin-top: 20px;

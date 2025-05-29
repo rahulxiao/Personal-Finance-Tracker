@@ -50,7 +50,7 @@
                 <div id="grandTotalIncome" style="font-size: 1.2rem; font-weight: 600; color: var(--primary-color); margin-left: auto;">Total Income: $0.00</div>
             </div>
         </header>
-
+        
         <div class="income-container">
             <div class="header">
                 <div id="incomeInfo">
