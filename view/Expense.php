@@ -135,12 +135,13 @@
 
                 <form id="expenseForm" action="../controller/expenseDB.php" method="POST">
                     <input type="hidden" name="type" value="expense" />
-                    <input type="number" id="expense" name="expenseAmount" min= "0.01" placeholder="Amount" step="0.01" required />
+                    <input type="text" id="description" name="description" placeholder="Description" required />
                     <select id="category" name="category" required>
                         <option value="">Select Category</option>
                         <!-- Categories will be populated by JavaScript -->
                     </select>
-                    <input type="text" id="description" name="description" placeholder="Description" required />
+                    <input type="number" id="expense" name="expenseAmount" min= "0.01" placeholder="Amount" step="0.01" required />
+                    
                     <input type="date" id="expenseDate" name="expenseDate" required />
                     <input type="submit" value="Add Expense" />
                 </form>
