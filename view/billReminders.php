@@ -80,15 +80,25 @@
                         <option value="">Select Category</option>
                         <?php
                             $con = mysqli_connect('127.0.0.1', 'root', '', 'finance');
-                            $sql = "SHOW COLUMNS FROM billreminders LIKE 'bCategories'";
+                            
+                            // Get enum values using INFORMATION_SCHEMA
+                            $sql = "SELECT COLUMN_TYPE 
+                                   FROM INFORMATION_SCHEMA.COLUMNS 
+                                   WHERE TABLE_SCHEMA = 'finance' 
+                                   AND TABLE_NAME = 'billreminders' 
+                                   AND COLUMN_NAME = 'bCategories'";
+                            
                             $result = mysqli_query($con, $sql);
-                            $row = mysqli_fetch_array($result);
-                            $type = $row['Type'];
-                            preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
-                            $values = explode("','", $matches[1]);
-                            foreach($values as $value) {
-                                echo "<option value='$value'>$value</option>";
+                            if ($row = mysqli_fetch_assoc($result)) {
+                                // Remove 'enum(' and ')' and split by comma
+                                $enumValues = str_replace(['enum(', ')', "'"], '', $row['COLUMN_TYPE']);
+                                $values = explode(',', $enumValues);
+                                
+                                foreach($values as $value) {
+                                    echo "<option value='" . trim($value) . "'>" . trim($value) . "</option>";
+                                }
                             }
+                            
                             mysqli_close($con);
                         ?>
                     </select>
